@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.dyno.navi_noti.MainActivity
 import com.dyno.navi_noti.R
-import com.dyno.navi_noti.data.model.ManeuverType
 import com.dyno.navi_noti.data.model.NavigationStep
 import com.dyno.navi_noti.data.preference.PreferencesManager
 import com.dyno.navi_noti.util.withAppLanguage
@@ -62,7 +61,7 @@ class NavigationNotificationManager(private val context: Context) {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_nav_notification)
-            .setContentTitle(formatNotificationTitle(step, notificationContext))
+            .setContentTitle(step.formatNotificationTitle(notificationContext))
             .setContentText(step.formatContent(notificationContext))
             .setStyle(
                 NotificationCompat.BigTextStyle()
@@ -80,19 +79,6 @@ class NavigationNotificationManager(private val context: Context) {
         } catch (_: SecurityException) {
             // Trường hợp người dùng chưa cấp quyền POST_NOTIFICATIONS trên Android 13+
         }
-    }
-
-    private fun formatNotificationTitle(step: NavigationStep, context: Context): String {
-        val arrow = when (step.maneuver) {
-            ManeuverType.TURN_LEFT -> "←"
-            ManeuverType.TURN_RIGHT -> "→"
-            ManeuverType.STRAIGHT -> "↑"
-            ManeuverType.ROUNDABOUT -> "↗"
-            ManeuverType.DESTINATION -> "✓"
-            ManeuverType.WAITING -> "…"
-            ManeuverType.UNKNOWN -> "↑"
-        }
-        return "$arrow ${step.formatTitle(context)}"
     }
 
     /// Xóa bỏ hoàn toàn thông báo điều hướng khi hành trình tạm dừng hoặc kết thúc

@@ -42,6 +42,7 @@ class GoogleMapsNotificationParserTest {
         )
         assertNotNull(step)
         assertTrue(step!!.isApproaching)
+        assertEquals("→", step.maneuver.notificationArrow)
         assertEquals("Còn 20 m: Rẽ phải vào Đường Trần Hưng Đạo", step.formattedContent)
     }
 

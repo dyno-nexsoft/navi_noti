@@ -71,7 +71,8 @@ fun HomeScreen(
 
             NavigationStatusCard(
                 state = currentState,
-                step = currentStep
+                step = currentStep,
+                appLanguage = appLanguage
             )
 
             SimulatorControlsCard(

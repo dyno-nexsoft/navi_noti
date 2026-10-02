@@ -35,14 +35,17 @@ import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.TurnRight
 import com.dyno.navi_noti.R
+import com.dyno.navi_noti.data.model.AppLanguage
 import com.dyno.navi_noti.data.model.NavigationState
 import com.dyno.navi_noti.data.model.NavigationStep
+import com.dyno.navi_noti.util.withAppLanguage
 
 /// Thẻ hiển thị trạng thái hiện tại và xem trước giao diện thông báo trên mặt đồng hồ
 @Composable
 fun NavigationStatusCard(
     state: NavigationState,
     step: NavigationStep?,
+    appLanguage: AppLanguage,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -67,7 +70,7 @@ fun NavigationStatusCard(
             )
 
             Spacer(modifier = Modifier.height(12.dp))
-            WatchNotificationPreview(step = step, state = state)
+            WatchNotificationPreview(step = step, state = state, appLanguage = appLanguage)
         }
     }
 }
@@ -83,8 +86,12 @@ private fun stateIcon(state: NavigationState) = when (state) {
 
 /// Khung xem trước thông báo như hiển thị trên màn hình đồng hồ thông minh
 @Composable
-private fun WatchNotificationPreview(step: NavigationStep?, state: NavigationState) {
-    val context = LocalContext.current
+private fun WatchNotificationPreview(
+    step: NavigationStep?,
+    state: NavigationState,
+    appLanguage: AppLanguage
+) {
+    val context = LocalContext.current.withAppLanguage(appLanguage)
 
     Box(
         modifier = Modifier
@@ -115,7 +122,7 @@ private fun WatchNotificationPreview(step: NavigationStep?, state: NavigationSta
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        text = step.formatTitle(context),
+                        text = step.formatNotificationTitle(context),
                         style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.inverseOnSurface
