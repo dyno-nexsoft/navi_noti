@@ -67,7 +67,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /// Kích hoạt chạy thử kịch bản hành trình mẫu trên đồng hồ
     fun startSimulation() {
-        simulator.startSimulation()
+        simulator.startSimulation(preferencesManager.appLanguage.value)
     }
 
     /// Dừng kịch bản mô phỏng và gỡ thông báo

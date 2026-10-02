@@ -5,16 +5,28 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BrightnessAuto
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.LightMode
 import com.dyno.navi_noti.R
 import com.dyno.navi_noti.data.model.AppLanguage
 import com.dyno.navi_noti.data.model.ThemeMode
@@ -30,6 +42,8 @@ fun SettingsCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
@@ -69,15 +83,25 @@ private fun ThemeSelectorSection(
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            ThemeMode.entries.forEach { mode ->
-                FilterChip(
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            ThemeMode.entries.forEachIndexed { index, mode ->
+                SegmentedButton(
                     selected = mode == currentThemeMode,
                     onClick = { onThemeModeSelected(mode) },
-                    label = { Text(stringResource(mode.titleRes)) }
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = ThemeMode.entries.size
+                    ),
+                    label = {
+                        SegmentedOptionLabel(
+                            icon = when (mode) {
+                                ThemeMode.SYSTEM -> Icons.Outlined.BrightnessAuto
+                                ThemeMode.LIGHT -> Icons.Outlined.LightMode
+                                ThemeMode.DARK -> Icons.Outlined.DarkMode
+                            },
+                            text = stringResource(mode.titleRes)
+                        )
+                    }
                 )
             }
         }
@@ -97,17 +121,38 @@ private fun LanguageSelectorSection(
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            AppLanguage.entries.forEach { lang ->
-                FilterChip(
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            AppLanguage.entries.forEachIndexed { index, lang ->
+                SegmentedButton(
                     selected = lang == currentLanguage,
                     onClick = { onLanguageSelected(lang) },
-                    label = { Text(stringResource(lang.titleRes)) }
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = AppLanguage.entries.size
+                    ),
+                    label = {
+                        SegmentedOptionLabel(
+                            icon = Icons.Outlined.Language,
+                            text = stringResource(lang.titleRes)
+                        )
+                    }
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SegmentedOptionLabel(icon: ImageVector, text: String) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp)
+        )
+        Text(text)
     }
 }

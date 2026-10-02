@@ -1,11 +1,13 @@
 package com.dyno.navi_noti.data.simulator
 
 import android.content.Context
+import com.dyno.navi_noti.data.model.AppLanguage
 import com.dyno.navi_noti.data.model.ManeuverType
 import com.dyno.navi_noti.data.model.NavigationState
 import com.dyno.navi_noti.data.model.NavigationStep
 import com.dyno.navi_noti.data.repository.NavigationRepository
 import com.dyno.navi_noti.service.NavigationNotificationManager
+import com.dyno.navi_noti.util.withAppLanguage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,9 +17,9 @@ import kotlinx.coroutines.launch
 /// Trình mô phỏng hành trình mẫu giúp người dùng kiểm tra thông báo trên đồng hồ
 class SampleJourneySimulator(private val context: Context) {
 
-    private val notificationManager = NavigationNotificationManager(context)
     private val scope = CoroutineScope(Dispatchers.Default)
     private var simulationJob: Job? = null
+    private var notificationManager: NavigationNotificationManager? = null
 
     private val sampleRoute = listOf(
         // Bước 1: Bắt đầu đi thẳng
@@ -83,19 +85,22 @@ class SampleJourneySimulator(private val context: Context) {
     )
 
     /// Bắt đầu phát kịch bản hành trình mẫu lên thông báo đồng hồ
-    fun startSimulation() {
+    fun startSimulation(language: AppLanguage) {
         stopSimulation()
+        val localizedContext = context.withAppLanguage(language)
+        val activeNotificationManager = NavigationNotificationManager(localizedContext)
+        notificationManager = activeNotificationManager
         NavigationRepository.setSimulatorRunning(true)
 
         simulationJob = scope.launch {
             for ((step, delayMs) in sampleRoute) {
-                notificationManager.showOrUpdateNotification(step)
+                activeNotificationManager.showOrUpdateNotification(step)
                 NavigationRepository.updateStep(step)
                 delay(delayMs)
             }
 
             // Kết thúc hành trình, tự động dọn dẹp thông báo
-            notificationManager.dismissNotification()
+            activeNotificationManager.dismissNotification()
             NavigationRepository.setState(NavigationState.COMPLETED)
             NavigationRepository.setSimulatorRunning(false)
         }
@@ -105,7 +110,8 @@ class SampleJourneySimulator(private val context: Context) {
     fun stopSimulation() {
         simulationJob?.cancel()
         simulationJob = null
-        notificationManager.dismissNotification()
+        notificationManager?.dismissNotification()
+        notificationManager = null
         NavigationRepository.setState(NavigationState.IDLE)
         NavigationRepository.setSimulatorRunning(false)
     }

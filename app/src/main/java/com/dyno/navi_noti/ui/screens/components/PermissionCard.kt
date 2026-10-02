@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,9 +32,11 @@ fun PermissionCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isGranted) {
-                MaterialTheme.colorScheme.surfaceVariant
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.58f)
             } else {
                 MaterialTheme.colorScheme.errorContainer
             }
@@ -50,7 +53,7 @@ fun PermissionCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = if (isGranted) {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
                     MaterialTheme.colorScheme.onErrorContainer
                 }
@@ -62,7 +65,7 @@ fun PermissionCard(
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isGranted) {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.82f)
                 } else {
                     MaterialTheme.colorScheme.onErrorContainer
                 }

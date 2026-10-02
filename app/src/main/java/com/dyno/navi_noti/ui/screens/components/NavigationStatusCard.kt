@@ -40,6 +40,8 @@ fun NavigationStatusCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
@@ -102,7 +104,7 @@ private fun WatchNotificationPreview(step: NavigationStep?, state: NavigationSta
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.inverseSurface)
-            .padding(16.dp)
+            .padding(18.dp)
     ) {
         if (step != null && state.shouldShowNotification) {
             Row(
