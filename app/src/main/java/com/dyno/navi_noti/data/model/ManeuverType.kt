@@ -7,7 +7,7 @@ import com.dyno.navi_noti.R
 enum class ManeuverType(
     val defaultActionName: String,
     @get:DrawableRes val iconRes: Int,
-    val notificationArrow: String
+    val notificationArrow: String?
 ) {
     TURN_LEFT("Rẽ trái", R.drawable.ic_nav_turn_left, "←"),
     TURN_RIGHT("Rẽ phải", R.drawable.ic_nav_turn_right, "→"),
@@ -15,7 +15,7 @@ enum class ManeuverType(
     ROUNDABOUT("Đi theo lối ra", R.drawable.ic_nav_roundabout, "↗"),
     DESTINATION("Đã đến nơi", R.drawable.ic_nav_destination, "✓"),
     WAITING("Đang chờ hướng dẫn", R.drawable.ic_nav_waiting, "…"),
-    UNKNOWN("Tiếp tục theo lộ trình", R.drawable.ic_nav_notification, "↑");
+    UNKNOWN("Tiếp tục theo lộ trình", R.drawable.ic_nav_notification, null);
 
     companion object {
         /// Phân tích chuỗi hành động để xác định loại maneuver phù hợp

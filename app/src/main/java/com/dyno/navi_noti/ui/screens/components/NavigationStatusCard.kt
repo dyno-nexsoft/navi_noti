@@ -30,12 +30,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.HourglassTop
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Navigation
 import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.TurnRight
 import com.dyno.navi_noti.R
 import com.dyno.navi_noti.data.model.AppLanguage
+import com.dyno.navi_noti.data.model.ManeuverType
 import com.dyno.navi_noti.data.model.NavigationState
 import com.dyno.navi_noti.data.model.NavigationStep
 import com.dyno.navi_noti.util.withAppLanguage
@@ -112,12 +114,21 @@ private fun WatchNotificationPreview(
                         .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        painter = painterResource(id = step.maneuver.iconRes),
-                        contentDescription = step.action,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(28.dp)
-                    )
+                    if (step.maneuver == ManeuverType.UNKNOWN) {
+                        Icon(
+                            imageVector = Icons.Outlined.LocationOn,
+                            contentDescription = step.action,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = step.maneuver.iconRes),
+                            contentDescription = step.action,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

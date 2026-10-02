@@ -46,22 +46,31 @@ object GoogleMapsNotificationParser {
     )
 
     /// Phân tích title và text từ thông báo để trích xuất bước điều hướng chuẩn cho đồng hồ
-    fun parse(title: String?, text: String?, subText: String? = null): NavigationStep? {
+    fun parse(
+        title: String?,
+        text: String?,
+        subText: String? = null,
+        additionalTexts: List<String> = emptyList()
+    ): NavigationStep? {
         val rawTitle = title?.trim() ?: ""
         val rawText = text?.trim() ?: ""
         val rawSubText = subText?.trim() ?: ""
-        if (rawTitle.isEmpty() && rawText.isEmpty() && rawSubText.isEmpty()) return null
+        val rawAdditionalTexts = additionalTexts.map(String::trim).filter(String::isNotEmpty)
+        if (rawTitle.isEmpty() && rawText.isEmpty() && rawSubText.isEmpty() &&
+            rawAdditionalTexts.isEmpty()
+        ) return null
 
-        val combined = "$rawTitle $rawText $rawSubText".lowercase(Locale.ROOT)
+        val candidates = listOf(rawTitle, rawText, rawSubText) + rawAdditionalTexts
+        val combined = candidates.joinToString(" ").lowercase(Locale.ROOT)
         if (isArrival(combined)) {
             return NavigationStep.arrived(extractDestination(rawTitle, rawText, rawSubText))
         }
 
-        val distanceInfo = extractDistance(rawTitle, rawText)
-        val actionAndStreet = extractActionAndStreet(rawTitle, rawText, distanceInfo?.rawMatch)
+        val distanceInfo = extractDistance(candidates)
+        val actionAndStreet = extractActionAndStreet(candidates, distanceInfo?.rawMatch)
 
         val distanceMeters = distanceInfo?.meters
-        val isApproaching = distanceMeters != null && distanceMeters <= 35
+        val isApproaching = distanceMeters != null && distanceMeters <= APPROACHING_DISTANCE_METERS
 
         return NavigationStep(
             action = actionAndStreet.action,
@@ -91,8 +100,8 @@ object GoogleMapsNotificationParser {
     }
 
     /// Trích xuất khoảng cách hiển thị và quy đổi sang mét để phát hiện mốc quan trọng
-    private fun extractDistance(title: String, text: String): DistanceResult? {
-        val match = distanceRegex.find(title) ?: distanceRegex.find(text) ?: return null
+    private fun extractDistance(candidates: List<String>): DistanceResult? {
+        val match = candidates.firstNotNullOfOrNull(distanceRegex::find) ?: return null
         val rawVal = match.groupValues[1].replace(',', '.')
         val unit = match.groupValues[2].lowercase(Locale.ROOT)
         val num = rawVal.toDoubleOrNull() ?: return null
@@ -108,65 +117,77 @@ object GoogleMapsNotificationParser {
     }
 
     /// Bóc tách hành vi điều hướng cốt lõi và tên đường, tránh nhầm lẫn giữa tên đường cũ và mới
-    private fun extractActionAndStreet(title: String, text: String, distanceStr: String?): ActionStreetResult {
-        var cleanTitle = title
-        var cleanText = text
-        if (distanceStr != null) {
-            cleanTitle = cleanTitle.replace(distanceStr, "").trim()
-            cleanText = cleanText.replace(distanceStr, "").trim()
+    private fun extractActionAndStreet(candidates: List<String>, distanceStr: String?): ActionStreetResult {
+        val cleanedCandidates = candidates.map { candidate ->
+            distanceStr?.let { candidate.replace(it, "") }?.trim() ?: candidate.trim()
         }
-
-        val candidate = if (cleanTitle.length > 3 && !cleanTitle.all { it.isDigit() || it == '.' || it == ',' }) {
-            cleanTitle
-        } else {
-            cleanText
-        }
-
-        // Xử lý lối ra vòng xoay (hỗ trợ cả tiếng Việt và tiếng Anh)
-        val roundaboutMatch = roundaboutRegex.find(candidate)
-        if (roundaboutMatch != null) {
-            val act = roundaboutMatch.groupValues[1].trim()
-            val str = roundaboutMatch.groupValues.getOrNull(2)?.trim(' ', '-', '·', ':')
-            return ActionStreetResult(
-                action = act,
-                streetName = str?.ifBlank { null }
+        val parsedCandidates = cleanedCandidates.mapNotNull(::parseActionCandidate)
+        val explicitManeuver = parsedCandidates.firstOrNull {
+            it.maneuver in setOf(
+                ManeuverType.TURN_LEFT,
+                ManeuverType.TURN_RIGHT,
+                ManeuverType.ROUNDABOUT
             )
         }
-
-        // Kiểm tra tiền tố hành động kèm tên đường
-        for ((prefix, simplifiedAction) in actionPrefixes) {
-            val idx = candidate.indexOf(prefix, ignoreCase = true)
-            if (idx != -1) {
-                val street = candidate.substring(idx + prefix.length).trim(' ', '-', '·', ':')
-                return ActionStreetResult(
-                    action = simplifiedAction,
-                    streetName = street.ifBlank { null }
-                )
-            }
+        if (explicitManeuver != null) {
+            val street = explicitManeuver.result.streetName
+                ?: cleanedCandidates.firstNotNullOfOrNull { candidate ->
+                    if (ManeuverType.fromText(candidate) != ManeuverType.UNKNOWN) {
+                        null
+                    } else {
+                        candidate.trim(' ', '-', '·', ':').takeIf(String::isNotBlank)
+                    }
+                }
+            return explicitManeuver.result.copy(streetName = street)
         }
 
-        // Kiểm tra nếu candidate chính là một hành động đơn thuần
-        val candidateManeuver = ManeuverType.fromText(candidate)
-        if (candidateManeuver != ManeuverType.UNKNOWN) {
-            val remaining = if (candidate == cleanTitle) cleanText else cleanTitle
-            val remainingManeuver = ManeuverType.fromText(remaining)
-            val street = if (remaining.isNotBlank() && remainingManeuver == ManeuverType.UNKNOWN) {
-                remaining.trim(' ', '-', '·', ':')
-            } else {
-                null
-            }
-            return ActionStreetResult(
-                action = candidateManeuver.defaultActionName,
-                streetName = street?.ifBlank { null }
-            )
-        }
+        val recognizedManeuver = parsedCandidates.firstOrNull { it.maneuver != ManeuverType.UNKNOWN }
+        if (recognizedManeuver != null) return recognizedManeuver.result
 
+        val cleanTitle = cleanedCandidates.firstOrNull().orEmpty()
+        val cleanText = cleanedCandidates.getOrNull(1).orEmpty()
         return ActionStreetResult(
-            action = cleanTitle.ifBlank { "Tiếp tục" },
+            action = cleanTitle.ifBlank { cleanText.ifBlank { "Tiếp tục" } },
             streetName = cleanText.ifBlank { null }
         )
     }
 
+    private fun parseActionCandidate(candidate: String): ParsedAction? {
+        if (candidate.isBlank()) return null
+
+        val roundaboutMatch = roundaboutRegex.find(candidate)
+        if (roundaboutMatch != null) {
+            val action = roundaboutMatch.groupValues[1].trim()
+            val street = roundaboutMatch.groupValues.getOrNull(2)?.trim(' ', '-', '·', ':')
+            return ParsedAction(
+                maneuver = ManeuverType.ROUNDABOUT,
+                result = ActionStreetResult(action, street?.ifBlank { null })
+            )
+        }
+
+        for ((prefix, simplifiedAction) in actionPrefixes) {
+            val index = candidate.indexOf(prefix, ignoreCase = true)
+            if (index != -1) {
+                val street = candidate.substring(index + prefix.length).trim(' ', '-', '·', ':')
+                val maneuver = ManeuverType.fromText(simplifiedAction)
+                return ParsedAction(
+                    maneuver = maneuver,
+                    result = ActionStreetResult(simplifiedAction, street.ifBlank { null })
+                )
+            }
+        }
+
+        val maneuver = ManeuverType.fromText(candidate)
+        if (maneuver == ManeuverType.UNKNOWN) return null
+        return ParsedAction(
+            maneuver = maneuver,
+            result = ActionStreetResult(maneuver.defaultActionName, null)
+        )
+    }
+
+    private data class ParsedAction(val maneuver: ManeuverType, val result: ActionStreetResult)
     private data class DistanceResult(val displayText: String, val meters: Int, val rawMatch: String)
     private data class ActionStreetResult(val action: String, val streetName: String?)
+
+    private const val APPROACHING_DISTANCE_METERS = 100
 }

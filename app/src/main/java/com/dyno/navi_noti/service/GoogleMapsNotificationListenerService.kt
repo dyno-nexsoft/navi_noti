@@ -39,8 +39,17 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString()
         val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
         val subText = extras.getCharSequence(Notification.EXTRA_SUB_TEXT)?.toString()
+        val additionalTexts = buildList {
+            addNotNull(extras.getCharSequence(Notification.EXTRA_TITLE_BIG)?.toString())
+            addNotNull(extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString())
+            addNotNull(extras.getCharSequence(Notification.EXTRA_INFO_TEXT)?.toString())
+            addNotNull(extras.getCharSequence(Notification.EXTRA_SUMMARY_TEXT)?.toString())
+            extras.getCharSequenceArray(Notification.EXTRA_TEXT_LINES)
+                ?.mapNotNull { it?.toString() }
+                ?.let(::addAll)
+        }
 
-        val parsedStep = GoogleMapsNotificationParser.parse(title, text, subText)
+        val parsedStep = GoogleMapsNotificationParser.parse(title, text, subText, additionalTexts)
         if (parsedStep != null) {
             if (arrivalReceived && !parsedStep.isDestination) return
             if (parsedStep.isDestination) arrivalReceived = true
@@ -49,9 +58,26 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
         }
     }
 
-    override fun onNotificationRemoved(sbn: StatusBarNotification?) {
-        super.onNotificationRemoved(sbn)
-        if (sbn == null || sbn.packageName != GOOGLE_MAPS_PACKAGE) return
+    override fun onNotificationRemoved(
+        sbn: StatusBarNotification,
+        rankingMap: RankingMap,
+        reason: Int
+    ) {
+        super.onNotificationRemoved(sbn, rankingMap, reason)
+
+        if (sbn.packageName == packageName &&
+            sbn.id == NavigationNotificationManager.NOTIFICATION_ID &&
+            isUserDismissal(reason)
+        ) {
+            val state = NavigationRepository.currentState.value
+            val currentStep = NavigationRepository.currentStep.value
+            if (state.shouldShowNotification && currentStep != null) {
+                notificationManager.restoreNotification(currentStep)
+            }
+            return
+        }
+
+        if (sbn.packageName != GOOGLE_MAPS_PACKAGE) return
         if (NavigationRepository.isSimulatorRunning.value) return
 
         arrivalReceived = false
@@ -63,4 +89,11 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
     companion object {
         const val GOOGLE_MAPS_PACKAGE = "com.google.android.apps.maps"
     }
+
+    private fun MutableList<String>.addNotNull(value: String?) {
+        if (!value.isNullOrBlank()) add(value)
+    }
+
+    private fun isUserDismissal(reason: Int): Boolean =
+        reason == REASON_CANCEL || reason == REASON_CANCEL_ALL
 }

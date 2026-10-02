@@ -27,7 +27,7 @@ data class NavigationStep(
 
     /// Tiêu đề đầy đủ dùng chung cho notification và phần xem trước trong ứng dụng
     fun formatNotificationTitle(context: Context): String =
-        "${maneuver.notificationArrow} ${formatTitle(context)}"
+        maneuver.notificationArrow?.let { "$it ${formatTitle(context)}" } ?: formatTitle(context)
 
     /// Định dạng nội dung thông báo đa ngôn ngữ ngắn gọn cho đồng hồ
     fun formatContent(context: Context): String {

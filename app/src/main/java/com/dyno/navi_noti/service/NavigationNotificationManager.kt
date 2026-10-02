@@ -45,6 +45,15 @@ class NavigationNotificationManager(private val context: Context) {
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
     fun showOrUpdateNotification(step: NavigationStep) {
         if (!alertPolicy.shouldAlert(step)) return
+        postNotification(step, silent = false)
+    }
+
+    /// Khôi phục notification đã bị người dùng xóa khi hành trình vẫn đang diễn ra
+    fun restoreNotification(step: NavigationStep) {
+        postNotification(step, silent = true)
+    }
+
+    private fun postNotification(step: NavigationStep, silent: Boolean) {
         val notificationContext = context.withAppLanguage(
             PreferencesManager(context).appLanguage.value
         )
@@ -72,6 +81,8 @@ class NavigationNotificationManager(private val context: Context) {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(silent)
             .build()
 
         try {

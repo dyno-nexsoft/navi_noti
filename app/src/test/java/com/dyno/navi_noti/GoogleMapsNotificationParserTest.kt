@@ -47,6 +47,44 @@ class GoogleMapsNotificationParserTest {
     }
 
     @Test
+    fun parse_prefersUpcomingTurnOverStraightTitle() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "Đi thẳng",
+            text = "30 m · P. Ngọc Hà",
+            additionalTexts = listOf("Rẽ phải")
+        )
+
+        assertNotNull(step)
+        assertEquals(ManeuverType.TURN_RIGHT, step?.maneuver)
+        assertTrue(step!!.isApproaching)
+        assertEquals("P. Ngọc Hà", step.streetName)
+    }
+
+    @Test
+    fun parse_unknownManeuverDoesNotInventStraightArrow() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "Điện Biên Phủ",
+            text = "40 m"
+        )
+
+        assertNotNull(step)
+        assertEquals(ManeuverType.UNKNOWN, step?.maneuver)
+        assertEquals(null, step?.maneuver?.notificationArrow)
+    }
+
+    @Test
+    fun parse_marksStepsWithin100MetersAsApproaching() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "In 90 m",
+            text = "Turn left onto Market Street"
+        )
+
+        assertNotNull(step)
+        assertTrue(step!!.isApproaching)
+        assertEquals(ManeuverType.TURN_LEFT, step.maneuver)
+    }
+
+    @Test
     fun parse_arrival() {
         val step = GoogleMapsNotificationParser.parse(
             title = "Bạn đã đến nơi",
