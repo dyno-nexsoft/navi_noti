@@ -19,6 +19,7 @@ class NavigationNotificationManager(private val context: Context) {
 
     private val notificationManager = NotificationManagerCompat.from(context)
     private val alertPolicy = NavigationAlertPolicy()
+    private var lastPostedStep: NavigationStep? = null
 
     init {
         createNotificationChannel()
@@ -44,8 +45,14 @@ class NavigationNotificationManager(private val context: Context) {
 
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
     fun showOrUpdateNotification(step: NavigationStep) {
-        if (!alertPolicy.shouldAlert(step)) return
-        postNotification(step, silent = false)
+        val shouldAlert = alertPolicy.shouldAlert(step)
+        val oldStreet = lastPostedStep?.streetName?.takeIf(String::isNotBlank)
+        val newStreet = step.streetName?.takeIf(String::isNotBlank)
+        val streetChanged = lastPostedStep != null &&
+            oldStreet != newStreet &&
+            (oldStreet != null || newStreet != null)
+        if (!shouldAlert && !streetChanged) return
+        postNotification(step, silent = !shouldAlert)
     }
 
     /// Khôi phục notification đã bị người dùng xóa khi hành trình vẫn đang diễn ra
@@ -87,6 +94,7 @@ class NavigationNotificationManager(private val context: Context) {
 
         try {
             notificationManager.notify(NOTIFICATION_ID, notification)
+            lastPostedStep = step
         } catch (_: SecurityException) {
             // Trường hợp người dùng chưa cấp quyền POST_NOTIFICATIONS trên Android 13+
         }
@@ -96,6 +104,7 @@ class NavigationNotificationManager(private val context: Context) {
     fun dismissNotification() {
         notificationManager.cancel(NOTIFICATION_ID)
         alertPolicy.reset()
+        lastPostedStep = null
     }
 
     companion object {

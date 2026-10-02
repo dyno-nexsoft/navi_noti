@@ -20,7 +20,8 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đường Nguyễn Huệ", step?.streetName)
         assertEquals("250 m", step?.distanceText)
         assertEquals("Rẽ trái", step?.formattedTitle)
-        assertEquals("Còn 250 m: Rẽ trái vào Đường Nguyễn Huệ", step?.formattedContent)
+        assertEquals("Đường Nguyễn Huệ", step?.formattedNotificationTitle)
+        assertEquals("Còn 250 m · Rẽ trái", step?.formattedContent)
     }
 
     @Test
@@ -31,7 +32,7 @@ class GoogleMapsNotificationParserTest {
         )
         assertNotNull(step)
         assertEquals("Rẽ phải", step?.action)
-        assertEquals("Còn 50 m: Rẽ phải", step?.formattedContent)
+        assertEquals("Còn 50 m · Rẽ phải", step?.formattedContent)
     }
 
     @Test
@@ -43,7 +44,8 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertTrue(step!!.isApproaching)
         assertEquals("→", step.maneuver.notificationArrow)
-        assertEquals("Còn 20 m: Rẽ phải vào Đường Trần Hưng Đạo", step.formattedContent)
+        assertEquals("Đường Trần Hưng Đạo", step.formattedNotificationTitle)
+        assertEquals("Còn 20 m · Rẽ phải", step.formattedContent)
     }
 
     @Test
@@ -70,6 +72,8 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertEquals(ManeuverType.UNKNOWN, step?.maneuver)
         assertEquals(null, step?.maneuver?.notificationArrow)
+        assertEquals("Điện Biên Phủ", step?.formattedNotificationTitle)
+        assertEquals("Còn 40 m", step?.formattedContent)
     }
 
     @Test
@@ -106,7 +110,8 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đi theo lối ra thứ 2", step?.action)
         assertEquals(ManeuverType.ROUNDABOUT, step?.maneuver)
         assertEquals("Vòng xoay Dân Chủ", step?.streetName)
-        assertEquals("Còn 300 m · Vòng xoay Dân Chủ", step?.formattedContent)
+        assertEquals("Vòng xoay Dân Chủ", step?.formattedNotificationTitle)
+        assertEquals("Còn 300 m · Đi theo lối ra thứ 2", step?.formattedContent)
     }
 
     @Test

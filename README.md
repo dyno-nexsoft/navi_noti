@@ -6,16 +6,16 @@ Navi Noti giúp người dùng nhận biết bước điều hướng tiếp the
 
 Ví dụ thông báo:
 
-> **Rẽ trái**  
-> Còn 250 m · Đường Nguyễn Huệ
+> **Đường Nguyễn Huệ**  
+> Còn 100 m · Rẽ trái
 
-Thông tin quan trọng nhất luôn được đưa lên trước: **sắp làm gì**, **rẽ vào đường nào** và **còn bao xa**. Nội dung cần đọc nhanh trong một lần nhìn, dễ hiểu khi đang đi bộ, đi xe đạp hoặc lái xe.
+Tiêu đề ưu tiên tên đường sắp đi vào; dòng dưới cho biết còn bao xa và thao tác tiếp theo. Nội dung cần đọc nhanh trong một lần nhìn.
 
 ## Luồng sử dụng
 
 1. Người dùng mở Navi Noti và bắt đầu sử dụng bản đồ để đi đến điểm cần đến.
 2. Khi có hướng dẫn điều hướng, Navi Noti hiển thị bước tiếp theo trên điện thoại và đồng hồ.
-3. Khi gần đến chỗ cần rẽ, khoảng cách trong thông báo được cập nhật để người dùng kịp chuẩn bị.
+3. Khi còn 100 m và 30 m đến chỗ rẽ, ứng dụng phát cảnh báo để người dùng kịp chuẩn bị.
 4. Sau khi hoàn thành một bước, thông báo chuyển sang hướng dẫn kế tiếp.
 5. Khi người dùng dừng hoặc kết thúc hành trình, thông báo điều hướng được gỡ bỏ.
 
@@ -23,32 +23,33 @@ Thông tin quan trọng nhất luôn được đưa lên trước: **sắp làm 
 
 ### Tiêu đề
 
-Nêu hành động tiếp theo bằng câu ngắn, quen thuộc:
+Ưu tiên tên đường sắp đi vào. Nếu không có tên đường, dùng thao tác tiếp theo kèm mũi tên khi xác định được:
 
-- Rẽ trái
-- Rẽ phải
-- Đi thẳng
-- Đi theo lối ra thứ 2
+- Đường Nguyễn Huệ
+- ← Rẽ trái
+- → Rẽ phải
+- ↑ Đi thẳng
 - Đã đến nơi
 
 ### Nội dung
 
-Cho biết khoảng cách và tên đường sắp rẽ vào:
+Cho biết khoảng cách và thao tác tiếp theo, không lặp lại tên đường đã có ở tiêu đề:
 
-- Còn 250 m · Đường Nguyễn Huệ
-- Còn 50 m · Đường Lê Lợi
-- Đang đến điểm rẽ · Đường Trần Hưng Đạo
+- Còn 100 m · Rẽ trái
+- Còn 30 m · Rẽ phải
+- Còn 150 m · Đi thẳng
 
-Nếu hướng dẫn không có tên đường, chỉ hiển thị khoảng cách và hành động; không để tên đường cũ xuất hiện cùng hướng dẫn mới.
+Nếu không xác định được thao tác từ dữ liệu notification Google Maps, không tự suy đoán hướng rẽ hoặc hiển thị mũi tên thẳng; chỉ hiển thị khoảng cách.
 
 Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không tiếp tục hiển thị khoảng cách cũ. Nếu chưa có hướng dẫn kế tiếp, cần thể hiện trạng thái chờ thay vì để người dùng hiểu nhầm rằng thông tin cũ vẫn còn hiệu lực.
 
 ## Cách thông báo thay đổi
 
-- Chỉ thông báo ở các thời điểm quan trọng: khi sắp đến chỗ rẽ (ví dụ còn khoảng 300 m), khi gần đến chỗ rẽ (ví dụ còn khoảng 100 m), khi hướng dẫn chuyển sang thao tác kế tiếp và khi đến đích.
-- Các khoảng cách trên là mốc tham khảo; nên điều chỉnh theo tốc độ di chuyển và thời gian cần để người dùng chuẩn bị.
-- Không gửi thông báo định kỳ theo thời gian hoặc mỗi khi khoảng cách thay đổi. Giữa các mốc quan trọng, có thể cập nhật khoảng cách trên thông báo hiện tại mà không làm đồng hồ rung hoặc phát thông báo mới.
-- Chỉ giữ một thông báo điều hướng hiện tại; cập nhật thông báo đó khi sang mốc mới hoặc có hướng dẫn kế tiếp.
+- Chỉ phát cảnh báo tại các mốc 100 m, 30 m, khi tới điểm rẽ (Maps chuyển maneuver hoặc sang trạng thái chờ hướng dẫn), và khi đến đích.
+- Không phát cảnh báo định kỳ hoặc theo mỗi lần khoảng cách thay đổi.
+- Khi tên đường thay đổi, cập nhật notification hiện tại bằng cùng notification ID một cách im lặng; không để tên đường cũ hiển thị và không phát âm thanh/rung chỉ vì đổi tên đường.
+- Chỉ giữ một notification điều hướng hiện tại. Các lần cập nhật dùng cùng ID để thay nội dung, không tạo notification riêng mới.
+- Notification được đánh dấu ongoing để hạn chế vuốt xóa. Nếu người dùng xóa khi điều hướng còn hoạt động, ứng dụng khôi phục notification im lặng.
 - Không để lại thông báo cũ sau khi dừng hoặc hoàn thành hành trình.
 - Nội dung trên đồng hồ cần ngắn gọn, không phụ thuộc vào việc người dùng mở điện thoại.
 
@@ -58,7 +59,7 @@ Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không ti�
 |---|---|
 | Chưa bắt đầu | Sẵn sàng để người dùng bắt đầu hành trình |
 | Đang điều hướng | Hiển thị hướng dẫn kế tiếp và khoảng cách còn lại |
-| Đang đến gần chỗ rẽ | Làm rõ bước sắp thực hiện bằng thông tin ngắn, dễ nhận biết |
+| Đang đến gần chỗ rẽ | Hiển thị tên đường cùng khoảng cách và hướng rẽ đã nhận diện |
 | Đang chờ hướng dẫn | Không hiển thị nhầm hướng dẫn đã cũ |
 | Tạm dừng | Cho biết hành trình đang tạm dừng và không gây hiểu nhầm rằng chỉ đường vẫn tiếp tục |
 | Đã kết thúc | Gỡ thông báo điều hướng hiện tại |
@@ -82,5 +83,7 @@ Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không ti�
 - Người dùng có thể xem thử trải nghiệm với một hành trình mẫu trước khi sử dụng điều hướng thực tế.
 
 ## Trạng thái dự án
+
+Ứng dụng đọc notification Google Maps, phân tích hướng dẫn và khoảng cách, hiển thị trạng thái trong app, đồng thời gửi một notification điều hướng ongoing có thể đồng bộ tới đồng hồ.
 
 Hiện dự án mới có khung ứng dụng ban đầu. Trải nghiệm điều hướng, cập nhật thông báo và hiển thị trên đồng hồ vẫn cần được xây dựng.

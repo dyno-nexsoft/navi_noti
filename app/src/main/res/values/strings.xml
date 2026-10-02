@@ -56,6 +56,7 @@
     <!-- Notification Content -->
     <string name="content_remaining_turn">In %1$s: %2$s onto %3$s</string>
     <string name="content_remaining_turn_no_street">In %1$s: %2$s</string>
+    <string name="content_remaining_action">In %1$s · %2$s</string>
     <string name="content_remaining">In %1$s · %2$s</string>
     <string name="content_remaining_no_street">In %1$s</string>
     <string name="content_approaching">Approaching turn · %1$s</string>

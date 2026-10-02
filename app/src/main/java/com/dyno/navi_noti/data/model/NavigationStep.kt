@@ -26,8 +26,20 @@ data class NavigationStep(
     }
 
     /// Tiêu đề đầy đủ dùng chung cho notification và phần xem trước trong ứng dụng
-    fun formatNotificationTitle(context: Context): String =
-        maneuver.notificationArrow?.let { "$it ${formatTitle(context)}" } ?: formatTitle(context)
+    fun formatNotificationTitle(context: Context): String {
+        if (isWaiting || isDestination) return formatTitle(context)
+        streetName?.takeIf(String::isNotBlank)?.let { return it }
+        return maneuver.notificationArrow?.let { "$it ${formatTitle(context)}" } ?: formatTitle(context)
+    }
+
+    val formattedNotificationTitle: String
+        get() = when {
+            isWaiting -> "Đang chờ hướng dẫn"
+            isDestination -> "Đã đến nơi"
+            !streetName.isNullOrBlank() -> streetName
+            maneuver.notificationArrow != null -> "${maneuver.notificationArrow} ${formattedTitle}"
+            else -> formattedTitle
+        }
 
     /// Định dạng nội dung thông báo đa ngôn ngữ ngắn gọn cho đồng hồ
     fun formatContent(context: Context): String {
@@ -38,24 +50,13 @@ data class NavigationStep(
 
         return when {
             !distanceText.isNullOrBlank() &&
-                maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) &&
-                cleanStreet != null -> context.getString(
-                    R.string.content_remaining_turn,
-                    distanceText,
-                    formatTitle(context),
-                    cleanStreet
-                )
+                maneuver != ManeuverType.UNKNOWN ->
+                context.getString(R.string.content_remaining_action, distanceText, formatTitle(context))
             !distanceText.isNullOrBlank() &&
-                maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) ->
-                context.getString(
-                    R.string.content_remaining_turn_no_street,
-                    distanceText,
-                    formatTitle(context)
-                )
+                cleanStreet != null -> context.getString(R.string.content_remaining, distanceText, cleanStreet)
+            !distanceText.isNullOrBlank() -> context.getString(R.string.content_remaining_no_street, distanceText)
             isApproaching && cleanStreet != null -> context.getString(R.string.content_approaching, cleanStreet)
             isApproaching -> context.getString(R.string.content_approaching_no_street)
-            !distanceText.isNullOrBlank() && cleanStreet != null -> context.getString(R.string.content_remaining, distanceText, cleanStreet)
-            !distanceText.isNullOrBlank() -> context.getString(R.string.content_remaining_no_street, distanceText)
             cleanStreet != null -> cleanStreet
             else -> action
         }
@@ -83,15 +84,14 @@ data class NavigationStep(
                 else -> null
             }
             val cleanStreet = streetName?.takeIf { it.isNotBlank() }
-            val turnAction = maneuver.defaultActionName
+            val displayAction = if (maneuver == ManeuverType.ROUNDABOUT) action else maneuver.defaultActionName
 
             return when {
-                !distanceText.isNullOrBlank() &&
-                    maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) &&
-                    cleanStreet != null -> "Còn $distanceText: $turnAction vào $cleanStreet"
-                !distanceText.isNullOrBlank() &&
-                    maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) ->
-                    "Còn $distanceText: $turnAction"
+                !distanceText.isNullOrBlank() && maneuver != ManeuverType.UNKNOWN ->
+                    "Còn $distanceText · $displayAction"
+                !distanceText.isNullOrBlank() && cleanStreet != null ->
+                    "Còn $distanceText · $cleanStreet"
+                !distanceText.isNullOrBlank() -> "Còn $distanceText"
                 prefix != null && cleanStreet != null -> "$prefix · $cleanStreet"
                 prefix != null -> prefix
                 cleanStreet != null -> cleanStreet
