@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,10 +46,7 @@ fun NavigationStatusCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -64,25 +61,11 @@ fun NavigationStatusCard(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Navigation,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Text(
-                        text = stringResource(R.string.journey_status_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                    Icon(
+                        imageVector = Icons.Outlined.Navigation,
+                        contentDescription = null
                     )
+                    Text(stringResource(R.string.journey_status_title))
                 }
                 StatusChip(state = state)
             }
@@ -93,17 +76,9 @@ fun NavigationStatusCard(
     }
 }
 
-/// Huy hiệu hiển thị tên trạng thái với màu sắc tương ứng
+/// Huy hiệu mặc định Material 3 hiển thị trạng thái hành trình
 @Composable
 private fun StatusChip(state: NavigationState) {
-    val (bgColor, textColor) = when (state) {
-        NavigationState.NAVIGATING -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
-        NavigationState.APPROACHING -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-        NavigationState.WAITING -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-        NavigationState.COMPLETED -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
-        NavigationState.PAUSED -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-        NavigationState.IDLE -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
-    }
     val icon = when (state) {
         NavigationState.IDLE -> Icons.Outlined.RadioButtonUnchecked
         NavigationState.NAVIGATING -> Icons.Outlined.Navigation
@@ -113,23 +88,13 @@ private fun StatusChip(state: NavigationState) {
         NavigationState.COMPLETED -> Icons.Outlined.CheckCircle
     }
 
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(50))
-            .background(bgColor)
-            .padding(horizontal = 11.dp, vertical = 6.dp)
-    ) {
+    Badge {
         Row(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = icon, contentDescription = null, tint = textColor, modifier = Modifier.size(14.dp))
-            Text(
-                text = stringResource(state.titleRes),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = textColor
-            )
+            Icon(imageVector = icon, contentDescription = null)
+            Text(stringResource(state.titleRes))
         }
     }
 }

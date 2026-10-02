@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build APK to Downloads",
+      "type": "shell",
+      "command": "${workspaceFolder}\\.vscode\\build-apk.cmd",
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\cmd.exe",
+          "args": [
+            "/d",
+            "/c"
+          ]
+        }
+      },
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
