@@ -49,11 +49,12 @@ object GoogleMapsNotificationParser {
     fun parse(title: String?, text: String?, subText: String? = null): NavigationStep? {
         val rawTitle = title?.trim() ?: ""
         val rawText = text?.trim() ?: ""
-        if (rawTitle.isEmpty() && rawText.isEmpty()) return null
+        val rawSubText = subText?.trim() ?: ""
+        if (rawTitle.isEmpty() && rawText.isEmpty() && rawSubText.isEmpty()) return null
 
-        val combined = "$rawTitle $rawText".lowercase(Locale.ROOT)
+        val combined = "$rawTitle $rawText $rawSubText".lowercase(Locale.ROOT)
         if (isArrival(combined)) {
-            return NavigationStep.arrived(extractDestination(rawTitle, rawText))
+            return NavigationStep.arrived(extractDestination(rawTitle, rawText, rawSubText))
         }
 
         val distanceInfo = extractDistance(rawTitle, rawText)
@@ -77,13 +78,14 @@ object GoogleMapsNotificationParser {
         return text.contains("đã đến nơi") || 
                text.contains("bạn đã đến") || 
                text.contains("đến đích") ||
-               text.contains("you have arrived") ||
-               text.contains("arrived at")
+               text.contains("đã tới nơi") ||
+               Regex("""\b(arrived|you've arrived|you arrived|destination reached)\b""")
+                   .containsMatchIn(text)
     }
 
     /// Trích xuất tên điểm đến nếu có trong thông báo hoàn thành
-    private fun extractDestination(title: String, text: String): String? {
-        val full = "$title $text"
+    private fun extractDestination(title: String, text: String, subText: String): String? {
+        val full = "$title $text $subText"
         val regex = Regex("""(?:đến|đích|tại|at)\s+(.+)$""", RegexOption.IGNORE_CASE)
         return regex.find(full)?.groupValues?.get(1)?.trim()
     }

@@ -93,6 +93,29 @@ class GoogleMapsNotificationParserTest {
         assertTrue(step!!.isDestination)
         assertEquals(ManeuverType.DESTINATION, step.maneuver)
     }
-}
 
+    @Test
+    fun parse_shortArrivalInText() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "Ho Chi Minh's Mausoleum",
+            text = "Arrived"
+        )
+
+        assertNotNull(step)
+        assertTrue(step!!.isDestination)
+        assertEquals(ManeuverType.DESTINATION, step.maneuver)
+    }
+
+    @Test
+    fun parse_arrivalInSubText() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "Ho Chi Minh's Mausoleum",
+            text = null,
+            subText = "Destination reached"
+        )
+
+        assertNotNull(step)
+        assertTrue(step!!.isDestination)
+    }
+}
 

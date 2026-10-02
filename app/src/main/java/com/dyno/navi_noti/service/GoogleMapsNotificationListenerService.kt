@@ -11,6 +11,7 @@ import com.dyno.navi_noti.service.parser.GoogleMapsNotificationParser
 class GoogleMapsNotificationListenerService : NotificationListenerService() {
 
     private lateinit var notificationManager: NavigationNotificationManager
+    private var arrivalReceived = false
 
     override fun onCreate() {
         super.onCreate()
@@ -41,6 +42,8 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
 
         val parsedStep = GoogleMapsNotificationParser.parse(title, text, subText)
         if (parsedStep != null) {
+            if (arrivalReceived && !parsedStep.isDestination) return
+            if (parsedStep.isDestination) arrivalReceived = true
             notificationManager.showOrUpdateNotification(parsedStep)
             NavigationRepository.updateStep(parsedStep)
         }
@@ -51,6 +54,7 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
         if (sbn == null || sbn.packageName != GOOGLE_MAPS_PACKAGE) return
         if (NavigationRepository.isSimulatorRunning.value) return
 
+        arrivalReceived = false
         // Khi Google Maps gỡ thông báo, ta cũng lập tức gỡ thông báo trên smartwatch để tránh thông tin cũ
         notificationManager.dismissNotification()
         NavigationRepository.setState(NavigationState.COMPLETED)

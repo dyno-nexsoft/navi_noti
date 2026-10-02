@@ -11,6 +11,8 @@ import androidx.core.app.NotificationManagerCompat
 import com.dyno.navi_noti.MainActivity
 import com.dyno.navi_noti.R
 import com.dyno.navi_noti.data.model.NavigationStep
+import com.dyno.navi_noti.data.preference.PreferencesManager
+import com.dyno.navi_noti.util.withAppLanguage
 
 /// Trình quản lý xuất bản và cập nhật thông báo điều hướng cho smartwatch
 class NavigationNotificationManager(private val context: Context) {
@@ -43,6 +45,9 @@ class NavigationNotificationManager(private val context: Context) {
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
     fun showOrUpdateNotification(step: NavigationStep) {
         if (!alertPolicy.shouldAlert(step)) return
+        val notificationContext = context.withAppLanguage(
+            PreferencesManager(context).appLanguage.value
+        )
 
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -56,9 +61,12 @@ class NavigationNotificationManager(private val context: Context) {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_nav_notification)
-            .setContentTitle(step.formatTitle(context))
-            .setContentText(step.formatContent(context))
-            .setStyle(NotificationCompat.BigTextStyle().bigText(step.formatContent(context)))
+            .setContentTitle(step.formatTitle(notificationContext))
+            .setContentText(step.formatContent(notificationContext))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(step.formatContent(notificationContext))
+            )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_NAVIGATION)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
