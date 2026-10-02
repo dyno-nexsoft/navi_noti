@@ -42,7 +42,7 @@ class NavigationNotificationManager(private val context: Context) {
 
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
     fun showOrUpdateNotification(step: NavigationStep) {
-        val shouldAlert = alertPolicy.shouldAlert(step)
+        if (!alertPolicy.shouldAlert(step)) return
 
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -58,13 +58,12 @@ class NavigationNotificationManager(private val context: Context) {
             .setSmallIcon(R.drawable.ic_nav_notification)
             .setContentTitle(step.formatTitle(context))
             .setContentText(step.formatContent(context))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(step.formatContent(context)))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-
             .setCategory(NotificationCompat.CATEGORY_NAVIGATION)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
-            .setOnlyAlertOnce(!shouldAlert)
             .build()
 
         try {

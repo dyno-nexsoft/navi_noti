@@ -16,7 +16,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -56,14 +55,14 @@ fun NavigationStatusCard(
                 headlineContent = {
                     Text(stringResource(R.string.journey_status_title))
                 },
+                supportingContent = {
+                    Text(stringResource(state.titleRes))
+                },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Outlined.Navigation,
+                        imageVector = stateIcon(state),
                         contentDescription = null
                     )
-                },
-                trailingContent = {
-                    StatusChip(state = state)
                 }
             )
 
@@ -73,10 +72,7 @@ fun NavigationStatusCard(
     }
 }
 
-/// Chip Material 3 hiển thị trạng thái hành trình mà không gợi ý thao tác
-@Composable
-private fun StatusChip(state: NavigationState) {
-    val icon = when (state) {
+private fun stateIcon(state: NavigationState) = when (state) {
         NavigationState.IDLE -> Icons.Outlined.RadioButtonUnchecked
         NavigationState.NAVIGATING -> Icons.Outlined.Navigation
         NavigationState.APPROACHING -> Icons.Outlined.TurnRight
@@ -84,19 +80,6 @@ private fun StatusChip(state: NavigationState) {
         NavigationState.PAUSED -> Icons.Outlined.PauseCircle
         NavigationState.COMPLETED -> Icons.Outlined.CheckCircle
     }
-
-    SuggestionChip(
-        onClick = {},
-        enabled = false,
-        label = { Text(stringResource(state.titleRes)) },
-        icon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null
-            )
-        }
-    )
-}
 
 /// Khung xem trước thông báo như hiển thị trên màn hình đồng hồ thông minh
 @Composable
