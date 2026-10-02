@@ -20,7 +20,7 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đường Nguyễn Huệ", step?.streetName)
         assertEquals("250 m", step?.distanceText)
         assertEquals("Rẽ trái", step?.formattedTitle)
-        assertEquals("Còn 250 m · Đường Nguyễn Huệ", step?.formattedContent)
+        assertEquals("Còn 250 m: Rẽ trái vào Đường Nguyễn Huệ", step?.formattedContent)
     }
 
     @Test
@@ -31,7 +31,7 @@ class GoogleMapsNotificationParserTest {
         )
         assertNotNull(step)
         assertEquals("Rẽ phải", step?.action)
-        assertEquals("Còn 50 m", step?.formattedContent)
+        assertEquals("Còn 50 m: Rẽ phải", step?.formattedContent)
     }
 
     @Test
@@ -42,7 +42,7 @@ class GoogleMapsNotificationParserTest {
         )
         assertNotNull(step)
         assertTrue(step!!.isApproaching)
-        assertEquals("Đang đến điểm rẽ · Đường Trần Hưng Đạo", step.formattedContent)
+        assertEquals("Còn 20 m: Rẽ phải vào Đường Trần Hưng Đạo", step.formattedContent)
     }
 
     @Test
@@ -118,4 +118,3 @@ class GoogleMapsNotificationParserTest {
         assertTrue(step!!.isDestination)
     }
 }
-

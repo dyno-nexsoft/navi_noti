@@ -49,26 +49,26 @@ class SampleJourneySimulator(private val context: Context) {
             maneuver = ManeuverType.TURN_RIGHT
         ) to 3000L,
 
-        // Bước 4: Đến gần điểm rẽ 90m (mốc ~100m - Alert)
+        // Bước 4: Còn 100m đến điểm rẽ - cảnh báo gần rẽ
         NavigationStep(
             action = "Rẽ phải",
-            distanceText = "90 m",
+            distanceText = "100 m",
             streetName = "Đường Nguyễn Huệ",
-            distanceMeters = 90,
+            distanceMeters = 100,
             maneuver = ManeuverType.TURN_RIGHT
         ) to 3000L,
 
-        // Bước 5: Ngay tại điểm rẽ (< 35m - Alert)
+        // Bước 5: Còn 30m đến điểm rẽ - cảnh báo sát điểm rẽ
         NavigationStep(
             action = "Rẽ phải",
-            distanceText = "20 m",
+            distanceText = "30 m",
             streetName = "Đường Nguyễn Huệ",
-            distanceMeters = 20,
+            distanceMeters = 30,
             isApproaching = true,
             maneuver = ManeuverType.TURN_RIGHT
         ) to 3000L,
 
-        // Bước 6: Đang chờ hướng dẫn sau khi rẽ
+        // Bước 6: Điểm rẽ đã tới, đang chờ hướng dẫn tiếp theo
         NavigationStep.waiting() to 2500L,
 
         // Bước 7: Hướng dẫn mới - Rẽ trái vào Phố đi bộ

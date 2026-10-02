@@ -54,6 +54,8 @@
     <string name="action_waiting">Đang chờ hướng dẫn</string>
 
     <!-- Nội dung thông báo -->
+    <string name="content_remaining_turn">Còn %1$s: %2$s vào %3$s</string>
+    <string name="content_remaining_turn_no_street">Còn %1$s: %2$s</string>
     <string name="content_remaining">Còn %1$s · %2$s</string>
     <string name="content_remaining_no_street">Còn %1$s</string>
     <string name="content_approaching">Đang đến điểm rẽ · %1$s</string>

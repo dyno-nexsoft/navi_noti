@@ -1,13 +1,15 @@
 package com.dyno.navi_noti.service
 
+import com.dyno.navi_noti.data.model.ManeuverType
 import com.dyno.navi_noti.data.model.NavigationStep
 
 internal class NavigationAlertPolicy {
 
-    private var lastManeuver: String? = null
+    private var lastManeuver: ManeuverType? = null
     private var lastDistanceMeters: Int? = null
-    private var alertedNearTurn = false
-    private var alertedAtTurn = false
+    private var alerted100Meters = false
+    private var alerted30Meters = false
+    private var alertedTurnPoint = false
     private var alertedArrival = false
 
     fun shouldAlert(step: NavigationStep): Boolean {
@@ -17,32 +19,43 @@ internal class NavigationAlertPolicy {
             return true
         }
 
-        val maneuver = step.maneuver.name
-        val distance = step.distanceMeters
-        val isNewManeuver = lastManeuver != null && maneuver != lastManeuver
-        val isNextSameManeuver = !isNewManeuver &&
-            alertedAtTurn &&
-            lastDistanceMeters != null &&
-            lastDistanceMeters!! <= TURN_DISTANCE_METERS &&
-            distance != null &&
-            distance > NEAR_TURN_DISTANCE_METERS
-
-        if (isNewManeuver || isNextSameManeuver) {
-            alertedNearTurn = false
-            alertedAtTurn = false
+        if (step.isWaiting) {
+            val shouldAlertAtTurn = lastManeuver != null && !alertedTurnPoint
+            lastManeuver = null
+            lastDistanceMeters = null
+            alerted100Meters = false
+            alerted30Meters = false
+            alertedTurnPoint = true
+            return shouldAlertAtTurn
         }
 
-        lastManeuver = maneuver
+        val maneuver = step.maneuver
+        val distance = step.distanceMeters
+
+        if (lastManeuver != null && maneuver != lastManeuver) {
+            val reachedTurnPoint = alerted100Meters ||
+                alerted30Meters ||
+                (lastDistanceMeters != null && lastDistanceMeters!! <= TURN_DISTANCE_METERS)
+            lastManeuver = maneuver
+            lastDistanceMeters = distance
+            alerted100Meters = false
+            alerted30Meters = false
+            alertedTurnPoint = false
+            if (reachedTurnPoint) return true
+        } else if (lastManeuver == null) {
+            lastManeuver = maneuver
+            alertedTurnPoint = false
+        }
+
         if (distance != null) lastDistanceMeters = distance
 
-        if (distance != null && distance <= TURN_DISTANCE_METERS && !alertedAtTurn) {
-            alertedNearTurn = true
-            alertedAtTurn = true
+        if (distance != null && distance <= NEAR_TURN_DISTANCE_METERS && !alerted100Meters) {
+            alerted100Meters = true
             return true
         }
 
-        if (distance != null && distance <= NEAR_TURN_DISTANCE_METERS && !alertedNearTurn) {
-            alertedNearTurn = true
+        if (distance != null && distance <= TURN_DISTANCE_METERS && !alerted30Meters) {
+            alerted30Meters = true
             return true
         }
 
@@ -52,13 +65,14 @@ internal class NavigationAlertPolicy {
     fun reset() {
         lastManeuver = null
         lastDistanceMeters = null
-        alertedNearTurn = false
-        alertedAtTurn = false
+        alerted100Meters = false
+        alerted30Meters = false
+        alertedTurnPoint = false
         alertedArrival = false
     }
 
     private companion object {
         const val NEAR_TURN_DISTANCE_METERS = 100
-        const val TURN_DISTANCE_METERS = 35
+        const val TURN_DISTANCE_METERS = 30
     }
 }

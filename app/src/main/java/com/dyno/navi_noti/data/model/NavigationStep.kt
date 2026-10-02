@@ -33,6 +33,21 @@ data class NavigationStep(
         val cleanStreet = streetName?.takeIf { it.isNotBlank() }
 
         return when {
+            !distanceText.isNullOrBlank() &&
+                maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) &&
+                cleanStreet != null -> context.getString(
+                    R.string.content_remaining_turn,
+                    distanceText,
+                    formatTitle(context),
+                    cleanStreet
+                )
+            !distanceText.isNullOrBlank() &&
+                maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) ->
+                context.getString(
+                    R.string.content_remaining_turn_no_street,
+                    distanceText,
+                    formatTitle(context)
+                )
             isApproaching && cleanStreet != null -> context.getString(R.string.content_approaching, cleanStreet)
             isApproaching -> context.getString(R.string.content_approaching_no_street)
             !distanceText.isNullOrBlank() && cleanStreet != null -> context.getString(R.string.content_remaining, distanceText, cleanStreet)
@@ -59,13 +74,20 @@ data class NavigationStep(
             }
 
             val prefix = when {
-                isApproaching -> "Đang đến điểm rẽ"
                 !distanceText.isNullOrBlank() -> "Còn $distanceText"
+                isApproaching -> "Đang đến điểm rẽ"
                 else -> null
             }
             val cleanStreet = streetName?.takeIf { it.isNotBlank() }
+            val turnAction = maneuver.defaultActionName
 
             return when {
+                !distanceText.isNullOrBlank() &&
+                    maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) &&
+                    cleanStreet != null -> "Còn $distanceText: $turnAction vào $cleanStreet"
+                !distanceText.isNullOrBlank() &&
+                    maneuver in setOf(ManeuverType.TURN_LEFT, ManeuverType.TURN_RIGHT) ->
+                    "Còn $distanceText: $turnAction"
                 prefix != null && cleanStreet != null -> "$prefix · $cleanStreet"
                 prefix != null -> prefix
                 cleanStreet != null -> cleanStreet
