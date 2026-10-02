@@ -16,13 +16,7 @@ import com.dyno.navi_noti.data.model.NavigationStep
 class NavigationNotificationManager(private val context: Context) {
 
     private val notificationManager = NotificationManagerCompat.from(context)
-
-    // Lưu vết trạng thái trước để xác định thời điểm cần rung báo động
-    private var lastAction: String? = null
-    private var lastStreet: String? = null
-    private var hasAlerted300m = false
-    private var hasAlerted100m = false
-    private var hasAlertedTurnPoint = false
+    private val alertPolicy = NavigationAlertPolicy()
 
     init {
         createNotificationChannel()
@@ -48,7 +42,7 @@ class NavigationNotificationManager(private val context: Context) {
 
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
     fun showOrUpdateNotification(step: NavigationStep) {
-        val shouldAlert = evaluateAlertRequirement(step)
+        val shouldAlert = alertPolicy.shouldAlert(step)
 
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -83,49 +77,7 @@ class NavigationNotificationManager(private val context: Context) {
     /// Xóa bỏ hoàn toàn thông báo điều hướng khi hành trình tạm dừng hoặc kết thúc
     fun dismissNotification() {
         notificationManager.cancel(NOTIFICATION_ID)
-        resetAlertTriggers()
-    }
-
-    /// Đánh giá xem có nên rung cảnh báo trên smartwatch tại bước này hay không
-    private fun evaluateAlertRequirement(step: NavigationStep): Boolean {
-        val isNewStep = step.action != lastAction || step.streetName != lastStreet
-        if (isNewStep) {
-            lastAction = step.action
-            lastStreet = step.streetName
-            resetAlertTriggers()
-            return true
-        }
-
-        if (step.isDestination) return true
-
-        val distance = step.distanceMeters ?: return false
-
-        // Mốc sắp đến chỗ rẽ (~300m)
-        if (distance in 250..320 && !hasAlerted300m) {
-            hasAlerted300m = true
-            return true
-        }
-
-        // Mốc gần đến chỗ rẽ (~100m)
-        if (distance in 70..130 && !hasAlerted100m) {
-            hasAlerted100m = true
-            return true
-        }
-
-        // Mốc ngay tại điểm rẽ
-        if (step.isApproaching && !hasAlertedTurnPoint) {
-            hasAlertedTurnPoint = true
-            return true
-        }
-
-        return false
-    }
-
-    /// Thiết lập lại cờ báo động khi chuyển bước điều hướng mới
-    private fun resetAlertTriggers() {
-        hasAlerted300m = false
-        hasAlerted100m = false
-        hasAlertedTurnPoint = false
+        alertPolicy.reset()
     }
 
     companion object {
