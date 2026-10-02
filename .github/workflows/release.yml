@@ -1,0 +1,91 @@
+name: Release APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Version name (e.g. 1.2.0)'
+        required: true
+        type: string
+      version_code:
+        description: 'Version code (integer, e.g. 3)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build & Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version_name }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format: $VERSION (expected X.Y.Z)"
+            exit 1
+          fi
+          echo "✅ Version format valid: $VERSION"
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > navi-noti-release.jks
+          echo "✅ Keystore restored"
+
+      - name: Build Release APK
+        run: |
+          bash ./gradlew assembleRelease \
+            -PversionName="${{ github.event.inputs.version_name }}" \
+            -PversionCode="${{ github.event.inputs.version_code }}"
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/navi-noti-release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Rename APK
+        run: |
+          APK_PATH="app/build/outputs/apk/release/app-release.apk"
+          NEW_NAME="navi-noti-v${{ github.event.inputs.version_name }}.apk"
+          cp "$APK_PATH" "$NEW_NAME"
+          echo "APK_NAME=$NEW_NAME" >> $GITHUB_ENV
+          echo "✅ APK renamed to $NEW_NAME"
+
+      - name: Create Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TAG="v${{ github.event.inputs.version_name }}"
+          git tag -a "$TAG" -m "Release $TAG (versionCode ${{ github.event.inputs.version_code }})"
+          git push origin "$TAG"
+          echo "✅ Tag $TAG created and pushed"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version_name }}
+          name: Navi Noti v${{ github.event.inputs.version_name }}
+          body: |
+            ## Navi Noti v${{ github.event.inputs.version_name }}
+
+            **versionCode**: ${{ github.event.inputs.version_code }}
+            **Build**: ${{ github.run_number }}
+
+            ### Cài đặt / Install
+            Tải file APK bên dưới và cài đặt trực tiếp trên thiết bị Android.  
+            Download the APK below and install directly on your Android device.
+
+            > Yêu cầu Android 9.0 (API 28) trở lên · Requires Android 9.0 (API 28)+
+          files: ${{ env.APK_NAME }}
+          draft: false
+          prerelease: false
