@@ -70,6 +70,10 @@ Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không ti�
 - Không tạo theme hoặc bảng màu riêng; ưu tiên màu hệ thống Android để giao diện hòa hợp với giao diện thiết bị.
 - Tôn trọng chế độ sáng/tối của hệ thống và dùng màu động theo hệ thống trên các thiết bị hỗ trợ.
 - Ưu tiên bố cục đơn giản, chữ rõ ràng và thao tác dễ hiểu.
+- Bố cục thích ứng theo chiều rộng và chiều cao cửa sổ: điện thoại nhỏ dùng một cột, màn hình ngang rộng và tablet chuyển sang hai cột, đồng thời giới hạn chiều rộng nội dung để dễ đọc.
+- Trên màn hình ngang thấp, tiêu đề và khoảng cách được thu gọn để dành chỗ cho trạng thái hành trình và thao tác chạy thử.
+- Trên điện thoại gập có bản lề dọc, nội dung hai cột được tách theo vùng bản lề để tránh che khuất nội dung.
+- Hỗ trợ thay đổi kích thước cửa sổ trên điện thoại gập và tablet.
 - Màn hình chính tập trung vào trạng thái hành trình và thao tác bắt đầu/dừng.
 - Không yêu cầu người dùng thao tác nhiều khi đang di chuyển.
 - Thông báo trên đồng hồ là phần mở rộng của trải nghiệm điều hướng trên điện thoại; thông tin phải súc tích và nhất quán giữa hai thiết bị.

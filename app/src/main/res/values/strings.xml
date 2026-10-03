@@ -2,40 +2,44 @@
     <string name="app_name">Navi Noti</string>
     <string name="notification_channel_name">Navigation on Watch</string>
     <string name="notification_channel_desc">Shows compact navigation notifications optimized for smartwatches</string>
-    <string name="subtitle">Google Maps navigation on your watch</string>
+    <string name="subtitle">Navigation on your watch</string>
 
     <!-- Permissions -->
-    <string name="perm_ready_title">Notification Access: Ready</string>
-    <string name="perm_needed_title">Notification Access Required</string>
+    <string name="perm_ready_title">Notifications ready</string>
+    <string name="perm_needed_title">Notification access needed</string>
     <string name="perm_ready_desc">The app is ready to forward navigation steps from Google Maps to your watch.</string>
     <string name="perm_needed_desc">To display navigation on your watch, the app requires permission to read Google Maps notifications.</string>
     <string name="perm_grant_btn">Grant Permission</string>
 
     <!-- Navigation Status -->
-    <string name="journey_status_title">Journey Status</string>
-    <string name="no_noti_on_watch">No active watch notification</string>
-    <string name="start_maps_or_demo">Start navigation in Google Maps or run Demo below</string>
+    <string name="journey_status_title">Journey</string>
+    <string name="no_noti_on_watch">No watch alert</string>
+    <string name="start_maps_or_demo">Open Maps or run demo</string>
 
     <!-- Demo Controls -->
-    <string name="demo_journey_title">Sample Journey Demo</string>
+    <string name="demo_journey_title">Route demo</string>
     <string name="demo_journey_desc">Run a simulated route with alerts (~300m, ~100m, turn point, next step, arrival) to test your smartwatch notification before heading out.</string>
     <string name="demo_start_btn">Start Demo</string>
     <string name="demo_stop_btn">Stop Demo</string>
 
     <!-- User Guide -->
-    <string name="how_it_works_title">How it works:</string>
+    <string name="how_it_works_title">Quick guide</string>
     <string name="how_it_works_desc">1. Open Google Maps and start navigation as usual.\n2. Navi Noti filters and forwards the next step to your watch.\n3. The watch only vibrates at key milestones (~300m, ~100m, arrived).\n4. Notifications clear automatically when you pause or finish.</string>
 
     <!-- Settings: Theme & Language -->
-    <string name="settings_title">Appearance &amp; Language</string>
+    <string name="settings_title">Settings</string>
     <string name="theme_mode_label">Theme</string>
     <string name="theme_system">System</string>
+    <string name="theme_system_short">Auto</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="language_label">Language</string>
     <string name="lang_system">System</string>
+    <string name="lang_system_short">Auto</string>
     <string name="lang_vi">Tiếng Việt</string>
+    <string name="lang_vi_short">VI</string>
     <string name="lang_en">English</string>
+    <string name="lang_en_short">EN</string>
 
     <!-- Statuses -->
     <string name="status_idle">Idle</string>

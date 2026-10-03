@@ -18,6 +18,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:resizeableActivity="true"
             android:theme="@style/Theme.Navi_noti"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

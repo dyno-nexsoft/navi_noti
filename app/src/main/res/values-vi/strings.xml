@@ -2,40 +2,44 @@
     <string name="app_name">Navi Noti</string>
     <string name="notification_channel_name">Chỉ đường trên đồng hồ</string>
     <string name="notification_channel_desc">Hiển thị thông báo điều hướng ngắn gọn tối ưu cho đồng hồ thông minh</string>
-    <string name="subtitle">Chỉ đường Google Maps trên đồng hồ</string>
+    <string name="subtitle">Chỉ đường trên đồng hồ</string>
 
     <!-- Quyền truy cập -->
-    <string name="perm_ready_title">Quyền thông báo: Đã sẵn sàng</string>
-    <string name="perm_needed_title">Cần cấp quyền đọc thông báo</string>
+    <string name="perm_ready_title">Thông báo: Sẵn sàng</string>
+    <string name="perm_needed_title">Cần quyền thông báo</string>
     <string name="perm_ready_desc">Ứng dụng đã sẵn sàng nhận chỉ đường từ Google Maps và chuyển sang đồng hồ của bạn.</string>
     <string name="perm_needed_desc">Để hiển thị chỉ đường trên đồng hồ, ứng dụng cần quyền đọc thông báo điều hướng từ Google Maps.</string>
     <string name="perm_grant_btn">Cấp quyền ngay</string>
 
     <!-- Trạng thái hành trình -->
-    <string name="journey_status_title">Trạng thái hành trình</string>
-    <string name="no_noti_on_watch">Chưa có thông báo trên đồng hồ</string>
-    <string name="start_maps_or_demo">Bắt đầu điều hướng Google Maps hoặc bật Chạy thử bên dưới</string>
+    <string name="journey_status_title">Hành trình</string>
+    <string name="no_noti_on_watch">Chưa có thông báo</string>
+    <string name="start_maps_or_demo">Mở Maps hoặc chạy thử</string>
 
     <!-- Điều khiển thử nghiệm -->
-    <string name="demo_journey_title">Thử nghiệm hành trình mẫu</string>
+    <string name="demo_journey_title">Chạy thử hành trình</string>
     <string name="demo_journey_desc">Chạy một lộ trình mô phỏng các mốc báo động (~300m, ~100m, điểm rẽ, chuyển bước và đến nơi) để kiểm tra thông báo trên đồng hồ của bạn trước khi đi thực tế.</string>
     <string name="demo_start_btn">Bắt đầu chạy thử</string>
     <string name="demo_stop_btn">Dừng chạy thử</string>
 
     <!-- Hướng dẫn sử dụng -->
-    <string name="how_it_works_title">Cách hoạt động:</string>
+    <string name="how_it_works_title">Hướng dẫn nhanh</string>
     <string name="how_it_works_desc">1. Mở Google Maps và bắt đầu dẫn đường như bình thường.\n2. Navi Noti tự động lọc và đẩy bước kế tiếp sang thông báo đồng hồ.\n3. Đồng hồ chỉ rung tại các mốc quan trọng (~300m, ~100m, đến nơi).\n4. Thông báo tự động đóng khi bạn dừng hoặc hoàn thành lộ trình.</string>
 
     <!-- Cài đặt: Giao diện & Ngôn ngữ -->
-    <string name="settings_title">Giao diện &amp; Ngôn ngữ</string>
+    <string name="settings_title">Cài đặt</string>
     <string name="theme_mode_label">Chế độ giao diện</string>
     <string name="theme_system">Hệ thống</string>
+    <string name="theme_system_short">Tự động</string>
     <string name="theme_light">Sáng</string>
     <string name="theme_dark">Tối</string>
     <string name="language_label">Ngôn ngữ</string>
     <string name="lang_system">Hệ thống</string>
+    <string name="lang_system_short">Tự động</string>
     <string name="lang_vi">Tiếng Việt</string>
+    <string name="lang_vi_short">VI</string>
     <string name="lang_en">English</string>
+    <string name="lang_en_short">EN</string>
 
     <!-- Trạng thái -->
     <string name="status_idle">Chưa bắt đầu</string>
