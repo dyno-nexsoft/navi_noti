@@ -18,13 +18,13 @@
 
     <!-- Điều khiển thử nghiệm -->
     <string name="demo_journey_title">Chạy thử hành trình</string>
-    <string name="demo_journey_desc">Chạy một lộ trình mô phỏng các mốc báo động (~300m, ~100m, điểm rẽ, chuyển bước và đến nơi) để kiểm tra thông báo trên đồng hồ của bạn trước khi đi thực tế.</string>
+    <string name="demo_journey_desc">Chạy thử các mốc rẽ trái, lối ra thứ 2 kèm tên đường, chờ hướng dẫn và đến nơi để kiểm tra thông báo trên đồng hồ.</string>
     <string name="demo_start_btn">Bắt đầu chạy thử</string>
     <string name="demo_stop_btn">Dừng chạy thử</string>
 
     <!-- Hướng dẫn sử dụng -->
     <string name="how_it_works_title">Hướng dẫn nhanh</string>
-    <string name="how_it_works_desc">1. Mở Google Maps và bắt đầu dẫn đường như bình thường.\n2. Navi Noti tự động lọc và đẩy bước kế tiếp sang thông báo đồng hồ.\n3. Đồng hồ chỉ rung tại các mốc quan trọng (~300m, ~100m, đến nơi).\n4. Thông báo tự động đóng khi bạn dừng hoặc hoàn thành lộ trình.</string>
+    <string name="how_it_works_desc">1. Mở Google Maps và bắt đầu dẫn đường như bình thường.\n2. Navi Noti tự động lọc và đẩy bước kế tiếp sang thông báo đồng hồ.\n3. Đồng hồ chỉ rung tại các mốc quan trọng (~100m, ~30m, chuyển bước và đến nơi); cập nhật khoảng cách khác hiển thị im lặng.\n4. Thông báo tự động đóng khi bạn dừng hoặc hoàn thành lộ trình.</string>
 
     <!-- Cài đặt: Giao diện & Ngôn ngữ -->
     <string name="settings_title">Cài đặt</string>
@@ -61,6 +61,10 @@
     <string name="content_remaining_turn">Còn %1$s: %2$s vào %3$s</string>
     <string name="content_remaining_turn_no_street">Còn %1$s: %2$s</string>
     <string name="content_remaining_action">Còn %1$s · %2$s</string>
+    <string name="content_remaining_action_street">Còn %1$s · %2$s vào %3$s</string>
+    <string name="content_remaining_straight_street">Còn %1$s · %2$s trên %3$s</string>
+    <string name="content_action_street">%1$s vào %2$s</string>
+    <string name="content_straight_street">%1$s trên %2$s</string>
     <string name="content_remaining">Còn %1$s · %2$s</string>
     <string name="content_remaining_no_street">Còn %1$s</string>
     <string name="content_approaching">Đang đến điểm rẽ · %1$s</string>

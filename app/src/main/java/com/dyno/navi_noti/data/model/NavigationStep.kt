@@ -27,17 +27,13 @@ data class NavigationStep(
 
     /// Tiêu đề đầy đủ dùng chung cho notification và phần xem trước trong ứng dụng
     fun formatNotificationTitle(context: Context): String {
-        if (isWaiting || isDestination) return formatTitle(context)
-        streetName?.takeIf(String::isNotBlank)?.let { return it }
-        return maneuver.notificationArrow?.let { "$it ${formatTitle(context)}" } ?: formatTitle(context)
+        return formatTitle(context)
     }
 
     val formattedNotificationTitle: String
         get() = when {
             isWaiting -> "Đang chờ hướng dẫn"
             isDestination -> "Đã đến nơi"
-            !streetName.isNullOrBlank() -> streetName
-            maneuver.notificationArrow != null -> "${maneuver.notificationArrow} ${formattedTitle}"
             else -> formattedTitle
         }
 
@@ -46,16 +42,42 @@ data class NavigationStep(
         if (isWaiting) return context.getString(R.string.content_waiting)
         if (isDestination) return context.getString(R.string.content_arrived)
 
-        val cleanStreet = streetName?.takeIf { it.isNotBlank() }
+        val cleanStreet = streetName?.takeIf(String::isNotBlank)
+        val cleanDistance = distanceText?.takeIf(String::isNotBlank)
+        val hasAction = maneuver != ManeuverType.UNKNOWN
+
+        if (cleanStreet != null && hasAction) {
+            val actionText = formatTitle(context)
+            return when {
+                maneuver == ManeuverType.STRAIGHT ->
+                    cleanDistance?.let {
+                        context.getString(
+                            R.string.content_remaining_straight_street,
+                            it,
+                            actionText,
+                            cleanStreet
+                        )
+                    } ?: context.getString(R.string.content_straight_street, actionText, cleanStreet)
+                cleanDistance != null ->
+                    context.getString(
+                        R.string.content_remaining_action_street,
+                        cleanDistance,
+                        actionText,
+                        cleanStreet
+                    )
+                else -> context.getString(R.string.content_action_street, actionText, cleanStreet)
+            }
+        }
 
         return when {
-            !distanceText.isNullOrBlank() &&
-                maneuver != ManeuverType.UNKNOWN ->
-                context.getString(R.string.content_remaining_action, distanceText, formatTitle(context))
-            !distanceText.isNullOrBlank() &&
-                cleanStreet != null -> context.getString(R.string.content_remaining, distanceText, cleanStreet)
-            !distanceText.isNullOrBlank() -> context.getString(R.string.content_remaining_no_street, distanceText)
-            isApproaching && cleanStreet != null -> context.getString(R.string.content_approaching, cleanStreet)
+            cleanDistance != null && hasAction ->
+                context.getString(R.string.content_remaining_action, cleanDistance, formatTitle(context))
+            cleanDistance != null && cleanStreet != null ->
+                context.getString(R.string.content_remaining, cleanDistance, cleanStreet)
+            cleanDistance != null ->
+                context.getString(R.string.content_remaining_no_street, cleanDistance)
+            isApproaching && cleanStreet != null ->
+                context.getString(R.string.content_approaching, cleanStreet)
             isApproaching -> context.getString(R.string.content_approaching_no_street)
             cleanStreet != null -> cleanStreet
             else -> action
@@ -87,10 +109,18 @@ data class NavigationStep(
             val displayAction = if (maneuver == ManeuverType.ROUNDABOUT) action else maneuver.defaultActionName
 
             return when {
+                !distanceText.isNullOrBlank() && cleanStreet != null && maneuver == ManeuverType.STRAIGHT ->
+                    "Còn $distanceText · $displayAction trên $cleanStreet"
+                !distanceText.isNullOrBlank() && cleanStreet != null && maneuver != ManeuverType.UNKNOWN ->
+                    "Còn $distanceText · $displayAction vào $cleanStreet"
                 !distanceText.isNullOrBlank() && maneuver != ManeuverType.UNKNOWN ->
                     "Còn $distanceText · $displayAction"
                 !distanceText.isNullOrBlank() && cleanStreet != null ->
                     "Còn $distanceText · $cleanStreet"
+                cleanStreet != null && maneuver == ManeuverType.STRAIGHT ->
+                    "$displayAction trên $cleanStreet"
+                cleanStreet != null && maneuver != ManeuverType.UNKNOWN ->
+                    "$displayAction vào $cleanStreet"
                 !distanceText.isNullOrBlank() -> "Còn $distanceText"
                 prefix != null && cleanStreet != null -> "$prefix · $cleanStreet"
                 prefix != null -> prefix

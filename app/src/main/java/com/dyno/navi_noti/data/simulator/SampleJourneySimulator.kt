@@ -31,7 +31,7 @@ class SampleJourneySimulator(private val context: Context) {
             maneuver = ManeuverType.STRAIGHT
         ) to 3500L,
 
-        // Bước 2: Chuẩn bị rẽ phải (mốc ~300m - Alert)
+        // Bước 2: Hướng dẫn chuyển sang rẽ phải và cập nhật im lặng
         NavigationStep(
             action = "Rẽ phải",
             distanceText = "300 m",
@@ -71,16 +71,26 @@ class SampleJourneySimulator(private val context: Context) {
         // Bước 6: Điểm rẽ đã tới, đang chờ hướng dẫn tiếp theo
         NavigationStep.waiting() to 2500L,
 
-        // Bước 7: Hướng dẫn mới - Rẽ trái vào Phố đi bộ
+        // Bước 7: Hướng dẫn vào vòng xoay bằng lối ra thứ 2
         NavigationStep(
-            action = "Rẽ trái",
+            action = "Đi theo lối ra thứ 2",
             distanceText = "120 m",
-            streetName = "Phố đi bộ",
+            streetName = "Đường Cách Mạng Tháng Tám",
             distanceMeters = 120,
-            maneuver = ManeuverType.TURN_LEFT
+            maneuver = ManeuverType.ROUNDABOUT
         ) to 3000L,
 
-        // Bước 8: Đã đến nơi
+        // Bước 8: Nhắc lại lối ra và đường cần vào khi gần vòng xoay
+        NavigationStep(
+            action = "Đi theo lối ra thứ 2",
+            distanceText = "30 m",
+            streetName = "Đường Cách Mạng Tháng Tám",
+            distanceMeters = 30,
+            isApproaching = true,
+            maneuver = ManeuverType.ROUNDABOUT
+        ) to 3000L,
+
+        // Bước 9: Đã đến nơi
         NavigationStep.arrived("Nhà hát Thành phố") to 4000L
     )
 

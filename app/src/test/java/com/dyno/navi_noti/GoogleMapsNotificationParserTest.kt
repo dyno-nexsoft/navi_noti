@@ -20,8 +20,8 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đường Nguyễn Huệ", step?.streetName)
         assertEquals("250 m", step?.distanceText)
         assertEquals("Rẽ trái", step?.formattedTitle)
-        assertEquals("Đường Nguyễn Huệ", step?.formattedNotificationTitle)
-        assertEquals("Còn 250 m · Rẽ trái", step?.formattedContent)
+        assertEquals("Rẽ trái", step?.formattedNotificationTitle)
+        assertEquals("Còn 250 m · Rẽ trái vào Đường Nguyễn Huệ", step?.formattedContent)
     }
 
     @Test
@@ -44,8 +44,8 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertTrue(step!!.isApproaching)
         assertEquals("→", step.maneuver.notificationArrow)
-        assertEquals("Đường Trần Hưng Đạo", step.formattedNotificationTitle)
-        assertEquals("Còn 20 m · Rẽ phải", step.formattedContent)
+        assertEquals("Rẽ phải", step.formattedNotificationTitle)
+        assertEquals("Còn 20 m · Rẽ phải vào Đường Trần Hưng Đạo", step.formattedContent)
     }
 
     @Test
@@ -110,8 +110,11 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đi theo lối ra thứ 2", step?.action)
         assertEquals(ManeuverType.ROUNDABOUT, step?.maneuver)
         assertEquals("Vòng xoay Dân Chủ", step?.streetName)
-        assertEquals("Vòng xoay Dân Chủ", step?.formattedNotificationTitle)
-        assertEquals("Còn 300 m · Đi theo lối ra thứ 2", step?.formattedContent)
+        assertEquals("Đi theo lối ra thứ 2", step?.formattedNotificationTitle)
+        assertEquals(
+            "Còn 300 m · Đi theo lối ra thứ 2 vào Vòng xoay Dân Chủ",
+            step?.formattedContent
+        )
     }
 
     @Test
@@ -136,6 +139,18 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertTrue(step!!.isDestination)
         assertEquals(ManeuverType.DESTINATION, step.maneuver)
+    }
+
+    @Test
+    fun parse_straightInstructionIncludesUpcomingStreet() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "150 m",
+            text = "Đi tiếp trên Đường Lê Lợi"
+        )
+
+        assertNotNull(step)
+        assertEquals("Đi thẳng", step?.formattedNotificationTitle)
+        assertEquals("Còn 150 m · Đi thẳng trên Đường Lê Lợi", step?.formattedContent)
     }
 
     @Test

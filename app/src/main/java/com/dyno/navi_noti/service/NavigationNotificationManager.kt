@@ -46,12 +46,7 @@ class NavigationNotificationManager(private val context: Context) {
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
     fun showOrUpdateNotification(step: NavigationStep) {
         val shouldAlert = alertPolicy.shouldAlert(step)
-        val oldStreet = lastPostedStep?.streetName?.takeIf(String::isNotBlank)
-        val newStreet = step.streetName?.takeIf(String::isNotBlank)
-        val streetChanged = lastPostedStep != null &&
-            oldStreet != newStreet &&
-            (oldStreet != null || newStreet != null)
-        if (!shouldAlert && !streetChanged) return
+        if (!shouldAlert && step == lastPostedStep) return
         postNotification(step, silent = !shouldAlert)
     }
 

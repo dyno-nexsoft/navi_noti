@@ -6,10 +6,9 @@ Navi Noti giúp người dùng nhận biết bước điều hướng tiếp the
 
 Ví dụ thông báo:
 
-> **Đường Nguyễn Huệ**  
-> Còn 100 m · Rẽ trái
+> **Rẽ trái** — Còn 100 m · Rẽ trái vào Đường Nguyễn Huệ
 
-Tiêu đề ưu tiên tên đường sắp đi vào; dòng dưới cho biết còn bao xa và thao tác tiếp theo. Nội dung cần đọc nhanh trong một lần nhìn.
+Tiêu đề cho biết thao tác; dòng dưới ghép khoảng cách với đường sắp đi vào để người dùng biết rõ cần rẽ vào đâu. Ví dụ vòng xoay: **Đi theo lối ra thứ 2** · *Còn 30 m · Đi theo lối ra thứ 2 vào Đường Cách Mạng Tháng Tám*. Nội dung cần đọc nhanh trong một lần nhìn.
 
 ## Luồng sử dụng
 
@@ -21,25 +20,22 @@ Tiêu đề ưu tiên tên đường sắp đi vào; dòng dưới cho biết c�
 
 ## Nội dung thông báo
 
-### Tiêu đề
+### Tiêu đề và nội dung
 
-Ưu tiên tên đường sắp đi vào. Nếu không có tên đường, dùng thao tác tiếp theo kèm mũi tên khi xác định được:
+Tiêu đề ưu tiên thao tác kế tiếp:
 
-- Đường Nguyễn Huệ
-- ← Rẽ trái
-- → Rẽ phải
-- ↑ Đi thẳng
+- Rẽ trái
+- Rẽ phải
+- Đi theo lối ra thứ 2
 - Đã đến nơi
 
-### Nội dung
+Nội dung ghép khoảng cách, thao tác và đường sắp đi vào khi Maps cung cấp đủ dữ liệu:
 
-Cho biết khoảng cách và thao tác tiếp theo, không lặp lại tên đường đã có ở tiêu đề:
+- Còn 100 m · Rẽ trái vào Đường Nguyễn Huệ
+- Còn 30 m · Đi theo lối ra thứ 2 vào Đường Cách Mạng Tháng Tám
+- Còn 150 m · Đi thẳng trên Đường Lê Lợi
 
-- Còn 100 m · Rẽ trái
-- Còn 30 m · Rẽ phải
-- Còn 150 m · Đi thẳng
-
-Nếu không xác định được thao tác từ dữ liệu notification Google Maps, không tự suy đoán hướng rẽ hoặc hiển thị mũi tên thẳng; chỉ hiển thị khoảng cách.
+Nếu Google Maps không cung cấp tên đường hoặc thao tác đủ rõ trong notification, chỉ hiển thị phần xác định được, không tự suy đoán tên đường/hướng đi.
 
 Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không tiếp tục hiển thị khoảng cách cũ. Nếu chưa có hướng dẫn kế tiếp, cần thể hiện trạng thái chờ thay vì để người dùng hiểu nhầm rằng thông tin cũ vẫn còn hiệu lực.
 
@@ -85,6 +81,7 @@ Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không ti�
 - Thông báo tự chuyển sang bước mới khi hướng dẫn thay đổi.
 - Thông báo cũ được loại bỏ khi hành trình tạm dừng hoặc kết thúc.
 - Người dùng có thể xem thử trải nghiệm với một hành trình mẫu trước khi sử dụng điều hướng thực tế.
+- Notification Listener chỉ đọc nội dung Google Maps gửi trong notification; Android không cung cấp API chính thức để lấy toàn bộ tuyến đường đang chạy bên trong ứng dụng Maps. Routes API có thể tính một tuyến độc lập nhưng không đồng bộ được tuyến/điểm đến đang mở trong Maps. Muốn nhận hướng dẫn đầy đủ và ổn định, cần chuyển sang tích hợp Navigation SDK trong trải nghiệm điều hướng của chính ứng dụng; đây là thay đổi kiến trúc, cần API key, cấu hình thanh toán và tuân thủ điều khoản Google.
 
 ## Trạng thái dự án
 

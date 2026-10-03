@@ -18,13 +18,13 @@
 
     <!-- Demo Controls -->
     <string name="demo_journey_title">Route demo</string>
-    <string name="demo_journey_desc">Run a simulated route with alerts (~300m, ~100m, turn point, next step, arrival) to test your smartwatch notification before heading out.</string>
+    <string name="demo_journey_desc">Try left turns, the second exit with its destination road, waiting for guidance, and arrival to check smartwatch notifications.</string>
     <string name="demo_start_btn">Start Demo</string>
     <string name="demo_stop_btn">Stop Demo</string>
 
     <!-- User Guide -->
     <string name="how_it_works_title">Quick guide</string>
-    <string name="how_it_works_desc">1. Open Google Maps and start navigation as usual.\n2. Navi Noti filters and forwards the next step to your watch.\n3. The watch only vibrates at key milestones (~300m, ~100m, arrived).\n4. Notifications clear automatically when you pause or finish.</string>
+    <string name="how_it_works_desc">1. Open Google Maps and start navigation as usual.\n2. Navi Noti filters and forwards the next step to your watch.\n3. The watch only alerts at key milestones (~100m, ~30m, step changes, and arrival); other distance updates are silent.\n4. Notifications clear automatically when you pause or finish.</string>
 
     <!-- Settings: Theme & Language -->
     <string name="settings_title">Settings</string>
@@ -61,6 +61,10 @@
     <string name="content_remaining_turn">In %1$s: %2$s onto %3$s</string>
     <string name="content_remaining_turn_no_street">In %1$s: %2$s</string>
     <string name="content_remaining_action">In %1$s · %2$s</string>
+    <string name="content_remaining_action_street">In %1$s · %2$s onto %3$s</string>
+    <string name="content_remaining_straight_street">In %1$s · %2$s on %3$s</string>
+    <string name="content_action_street">%1$s onto %2$s</string>
+    <string name="content_straight_street">%1$s on %2$s</string>
     <string name="content_remaining">In %1$s · %2$s</string>
     <string name="content_remaining_no_street">In %1$s</string>
     <string name="content_approaching">Approaching turn · %1$s</string>
