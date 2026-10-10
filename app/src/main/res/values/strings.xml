@@ -46,6 +46,8 @@
     <string name="action_keep_left">Keep left</string>
     <string name="action_keep_right">Keep right</string>
     <string name="action_u_turn">Make a U-turn</string>
+    <string name="action_destination">Destination</string>
+    <string name="action_roundabout">Take exit</string>
     <string name="action_arrived">Arrived</string>
     <string name="action_waiting">Waiting for instruction</string>
 

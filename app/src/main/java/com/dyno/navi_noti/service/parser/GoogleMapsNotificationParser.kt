@@ -7,7 +7,8 @@ import java.util.Locale
 /// Bộ phân tích dữ liệu thông báo điều hướng từ Google Maps (hỗ trợ cả tiếng Việt và tiếng Anh)
 object GoogleMapsNotificationParser {
 
-    private val distanceRegex = Regex("""(?:in\s+)?(\d+(?:[.,]\d+)?)\s*(m|km|mét|km/h|ft|mi)""", RegexOption.IGNORE_CASE)
+    // (?!\p{L}) để "1 min" (thời gian trong subText) không bị hiểu là "1 m"
+    private val distanceRegex = Regex("""(?:in\s+)?(\d+(?:[.,]\d+)?)\s*(km|mét|m|ft|mi)(?!\p{L})""", RegexOption.IGNORE_CASE)
 
     private val roundaboutRegex = Regex(
         """(Đi theo lối ra(?:\s+thứ\s+\d+)?|Take exit(?:\s+\d+)?|Take the\s+\w+\s+exit)(?:\s+(?:vào|onto)\s+(.+))?""",
@@ -85,7 +86,8 @@ object GoogleMapsNotificationParser {
             return NavigationStep.arrived(extractDestination(rawTitle, rawText, rawSubText))
         }
 
-        val distanceInfo = extractDistance(candidates)
+        // subText là dòng ETA ("3 min · 900 m · 11:36 PM"): quãng đường cả chuyến, không phải tới điểm rẽ
+        val distanceInfo = extractDistance(candidates - rawSubText)
         val textResult = extractActionAndStreet(candidates, distanceInfo?.rawMatch)
         val actionAndStreet = applyIconManeuver(textResult, candidates, distanceInfo?.rawMatch, iconManeuver)
 
@@ -97,7 +99,7 @@ object GoogleMapsNotificationParser {
             distanceText = distanceInfo?.displayText,
             streetName = actionAndStreet.streetName?.let(::stripToward),
             distanceMeters = distanceMeters,
-            maneuver = ManeuverType.fromText(actionAndStreet.action),
+            maneuver = actionAndStreet.maneuver ?: ManeuverType.fromText(actionAndStreet.action),
             isApproaching = isApproaching
         )
     }
@@ -191,7 +193,7 @@ object GoogleMapsNotificationParser {
         } else {
             textResult.streetName
         }
-        return ActionStreetResult(iconManeuver.defaultActionName, street)
+        return ActionStreetResult(iconManeuver.defaultActionName, street, iconManeuver)
     }
 
     private fun stripToward(street: String): String? {
@@ -235,7 +237,11 @@ object GoogleMapsNotificationParser {
 
     private data class ParsedAction(val maneuver: ManeuverType, val result: ActionStreetResult)
     private data class DistanceResult(val displayText: String, val meters: Int, val rawMatch: String)
-    private data class ActionStreetResult(val action: String, val streetName: String?)
+    private data class ActionStreetResult(
+        val action: String,
+        val streetName: String?,
+        val maneuver: ManeuverType? = null
+    )
 
     private const val APPROACHING_DISTANCE_METERS = 100
 }

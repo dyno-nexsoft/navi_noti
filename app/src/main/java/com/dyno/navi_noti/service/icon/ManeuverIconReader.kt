@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Icon
 import android.os.Bundle
+import android.util.Log
 import com.dyno.navi_noti.data.model.ManeuverType
 
 /// Đọc hướng rẽ từ các icon trong notification Google Maps.
@@ -39,11 +40,25 @@ class ManeuverIconReader(private val context: Context) {
     /// Ưu tiên icon đã ghi nhớ (chính xác), sau đó mới phân tích hình học.
     /// Small icon có thể là logo Maps nên không dùng phân tích hình học cho nó.
     fun resolve(reading: IconReading): ManeuverType? {
+        if (Log.isLoggable(TAG, Log.DEBUG)) logReading(reading)
         reading.masks.firstNotNullOfOrNull { (_, mask) -> memory.lookup(mask.fingerprint()) }
             ?.let { return it }
         return reading.masks
             .filter { (source, _) -> source != IconSource.SMALL }
             .firstNotNullOfOrNull { (_, mask) -> ManeuverIconAnalyzer.classify(mask) }
+    }
+
+    private fun logReading(reading: IconReading) {
+        reading.masks.forEach { (source, mask) ->
+            val ascii = (0 until mask.height step 2).joinToString("\n") { y ->
+                (0 until mask.width).joinToString("") { x -> if (mask[x, y]) "#" else "." }
+            }
+            Log.d(
+                TAG,
+                "icon $source memory=${memory.lookup(mask.fingerprint())} " +
+                    "shape=${ManeuverIconAnalyzer.classify(mask)}\n$ascii"
+            )
+        }
     }
 
     private fun collectIcons(notification: Notification): List<SourceIcon> {
@@ -85,6 +100,7 @@ class ManeuverIconReader(private val context: Context) {
     class IconReading(val masks: List<Pair<IconSource, IconMask>>)
 
     private companion object {
+        const val TAG = "NaviNoti"
         const val PREFS_NAME = "maneuver_icon_memory"
         const val KEY_VOTES = "votes"
         const val BITMAP_SIZE = 96

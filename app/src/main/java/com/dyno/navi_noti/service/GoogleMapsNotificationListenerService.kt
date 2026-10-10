@@ -34,7 +34,10 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
-        if (sbn == null || sbn.packageName != GOOGLE_MAPS_PACKAGE) return
+        if (sbn?.packageName == GOOGLE_MAPS_PACKAGE && Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "Maps notification id=${sbn.id} category=${sbn.notification?.category} ongoing=${sbn.isOngoing}")
+        }
+        if (sbn == null || !sbn.isMapsNavigation()) return
         if (NavigationRepository.isSimulatorRunning.value) return // Ưu tiên chế độ mô phỏng nếu đang bật
 
         val notification = sbn.notification ?: return
@@ -94,7 +97,8 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
             return
         }
 
-        if (sbn.packageName != GOOGLE_MAPS_PACKAGE) return
+        // Gỡ tin cảnh báo của Maps (tắc đường, ngập...) không có nghĩa là kết thúc hành trình
+        if (!sbn.isMapsNavigation()) return
         if (NavigationRepository.isSimulatorRunning.value) return
 
         arrivalReceived = false
@@ -115,6 +119,14 @@ class GoogleMapsNotificationListenerService : NotificationListenerService() {
     private fun logExtras(extras: android.os.Bundle) {
         val dump = extras.keySet().sorted().joinToString("\n") { key -> "  $key = ${extras.get(key)}" }
         Log.d(TAG, "Maps notification extras:\n$dump")
+    }
+
+    /// Maps còn đăng tin cảnh báo (tắc đường, ngập...) cùng package.
+    /// Notification dẫn đường là ongoing (foreground service) và category navigation nếu có khai báo.
+    private fun StatusBarNotification.isMapsNavigation(): Boolean {
+        if (packageName != GOOGLE_MAPS_PACKAGE || !isOngoing) return false
+        val category = notification?.category ?: return true
+        return category == Notification.CATEGORY_NAVIGATION
     }
 
     private fun MutableList<String>.addNotNull(value: String?) {

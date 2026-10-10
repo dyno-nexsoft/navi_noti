@@ -46,6 +46,8 @@
     <string name="action_keep_left">Đi bên trái</string>
     <string name="action_keep_right">Đi bên phải</string>
     <string name="action_u_turn">Quay đầu</string>
+    <string name="action_destination">Điểm đến</string>
+    <string name="action_roundabout">Đi theo lối ra</string>
     <string name="action_arrived">Đã đến nơi</string>
     <string name="action_waiting">Đang chờ hướng dẫn</string>
 

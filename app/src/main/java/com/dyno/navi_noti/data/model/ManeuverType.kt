@@ -21,8 +21,8 @@ enum class ManeuverType(
     KEEP_RIGHT("Đi bên phải", R.drawable.ic_nav_turn_right, "↗", R.string.action_keep_right),
     U_TURN("Quay đầu", R.drawable.ic_nav_turn_left, "↶", R.string.action_u_turn),
     STRAIGHT("Đi thẳng", R.drawable.ic_nav_straight, "↑", R.string.action_straight),
-    ROUNDABOUT("Đi theo lối ra", R.drawable.ic_nav_roundabout, "↗", null),
-    DESTINATION("Đã đến nơi", R.drawable.ic_nav_destination, "✓", R.string.action_arrived),
+    ROUNDABOUT("Đi theo lối ra", R.drawable.ic_nav_roundabout, "↻", R.string.action_roundabout),
+    DESTINATION("Điểm đến", R.drawable.ic_nav_destination, "◎", R.string.action_destination),
     WAITING("Đang chờ hướng dẫn", R.drawable.ic_nav_waiting, "…", R.string.action_waiting),
     UNKNOWN("Tiếp tục theo lộ trình", R.drawable.ic_nav_notification, null, null);
 

@@ -230,4 +230,31 @@ class GoogleMapsNotificationParserTest {
             GoogleMapsNotificationParser.parse("In 300 ft", "Sharp right onto Pine St")?.maneuver
         )
     }
+
+    @Test
+    fun parse_liveMapsNotificationIgnoresTripDistanceInEta() {
+        // Tại điểm rẽ Maps để trống tiêu đề; quãng đường trong dòng ETA là của cả chuyến
+        val step = GoogleMapsNotificationParser.parse(
+            title = null,
+            text = "toward Lê Duẩn",
+            subText = "1 min · 190 m · 11:36 PM ETA",
+            iconManeuver = ManeuverType.STRAIGHT
+        )
+
+        assertEquals(null, step?.distanceText)
+        assertEquals("Lê Duẩn", step?.streetName)
+    }
+
+    @Test
+    fun parse_iconDestinationKeepsPlaceName() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "140 m",
+            text = "Notre Dame Cathedral of Saigon",
+            iconManeuver = ManeuverType.DESTINATION
+        )
+
+        assertEquals(ManeuverType.DESTINATION, step?.maneuver)
+        assertEquals(false, step?.isDestination)
+        assertEquals("Notre Dame Cathedral of Saigon", step?.streetName)
+    }
 }

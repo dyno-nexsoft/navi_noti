@@ -18,6 +18,8 @@ data class NavigationStep(
     fun formatTitle(context: Context): String = when {
         isDestination -> context.getString(R.string.action_arrived)
         isWaiting -> context.getString(R.string.action_waiting)
+        // Vòng xoay giữ nguyên câu của Maps khi có số lối ra ("Đi theo lối ra thứ 2")
+        maneuver == ManeuverType.ROUNDABOUT && action != maneuver.defaultActionName -> action
         else -> maneuver.titleRes?.let(context::getString) ?: action
     }
 
@@ -29,6 +31,12 @@ data class NavigationStep(
         val cleanStreet = streetName?.takeIf(String::isNotBlank)
         val cleanDistance = distanceText?.takeIf(String::isNotBlank)
         val hasAction = maneuver != ManeuverType.UNKNOWN
+
+        // Sắp tới đích: tên đường chính là tên điểm đến, không ghép "rẽ vào"
+        if (maneuver == ManeuverType.DESTINATION && cleanStreet != null) {
+            return cleanDistance?.let { context.getString(R.string.content_remaining, it, cleanStreet) }
+                ?: cleanStreet
+        }
 
         if (cleanStreet != null && hasAction) {
             val actionText = formatTitle(context)

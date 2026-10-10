@@ -12,7 +12,11 @@ object ManeuverIconAnalyzer {
     fun classify(mask: IconMask): ManeuverType? {
         val box = boundingBox(mask) ?: return null
         if (mask.filledCount * 50 < mask.width * mask.height) return null
-        if (hasEnclosedHole(mask, box)) return ManeuverType.ROUNDABOUT
+        val outside = reachableBackground(mask)
+        if (hasEnclosedHole(mask, box, outside)) {
+            // Ghim điểm đến có chấm tròn nằm lọt trong lỗ; vòng xoay thì nét liền một khối
+            return if (hasIsland(mask, outside)) ManeuverType.DESTINATION else ManeuverType.ROUNDABOUT
+        }
 
         val stem = findStem(mask, box) ?: return null
         val left = mutableListOf<Pair<Int, Int>>()
@@ -76,8 +80,47 @@ object ManeuverIconAnalyzer {
         return Math.toDegrees(0.5 * atan2(2 * cxy, cxx - cyy))
     }
 
-    /// Vòng xoay có lỗ tròn khép kín; tô loang nền từ viền, phần nền không chạm tới là lỗ
-    private fun hasEnclosedHole(mask: IconMask, box: Box): Boolean {
+    /// Vòng xoay/ghim có lỗ khép kín: phần nền không tô loang tới được từ viền ảnh
+    private fun hasEnclosedHole(mask: IconMask, box: Box, outside: BooleanArray): Boolean {
+        var holes = 0
+        for (y in box.top..box.bottom) for (x in box.left..box.right) {
+            if (!mask[x, y] && !outside[y * mask.width + x]) holes++
+        }
+        return holes * 100 >= box.area * MIN_HOLE_PERCENT
+    }
+
+    /// Có khối nét nào không chạm vào nền bên ngoài (nằm lọt trong lỗ) hay không
+    private fun hasIsland(mask: IconMask, outside: BooleanArray): Boolean {
+        val w = mask.width
+        val h = mask.height
+        val seen = BooleanArray(w * h)
+        for (start in 0 until w * h) {
+            if (seen[start] || !mask[start % w, start / w]) continue
+            var touchesOutside = false
+            val queue = ArrayDeque(listOf(start))
+            seen[start] = true
+            while (queue.isNotEmpty()) {
+                val i = queue.removeFirst()
+                val x = i % w
+                val y = i / w
+                for ((nx, ny) in listOf(x + 1 to y, x - 1 to y, x to y + 1, x to y - 1)) {
+                    if (nx !in 0 until w || ny !in 0 until h) { touchesOutside = true; continue }
+                    val n = ny * w + nx
+                    if (!mask[nx, ny]) {
+                        if (outside[n]) touchesOutside = true
+                    } else if (!seen[n]) {
+                        seen[n] = true
+                        queue += n
+                    }
+                }
+            }
+            if (!touchesOutside) return true
+        }
+        return false
+    }
+
+    /// Tô loang nền từ viền ảnh
+    private fun reachableBackground(mask: IconMask): BooleanArray {
         val w = mask.width
         val h = mask.height
         val reached = BooleanArray(w * h)
@@ -97,11 +140,7 @@ object ManeuverIconAnalyzer {
             val y = i / w
             visit(x + 1, y); visit(x - 1, y); visit(x, y + 1); visit(x, y - 1)
         }
-        var holes = 0
-        for (y in box.top..box.bottom) for (x in box.left..box.right) {
-            if (!mask[x, y] && !reached[y * w + x]) holes++
-        }
-        return holes * 100 >= box.area * MIN_HOLE_PERCENT
+        return reached
     }
 
     private fun boundingBox(mask: IconMask): Box? {
