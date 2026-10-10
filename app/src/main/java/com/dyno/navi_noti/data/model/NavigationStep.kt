@@ -21,18 +21,6 @@ data class NavigationStep(
         else -> maneuver.titleRes?.let(context::getString) ?: action
     }
 
-    /// Tiêu đề đầy đủ dùng chung cho notification và phần xem trước trong ứng dụng
-    fun formatNotificationTitle(context: Context): String {
-        return formatTitle(context)
-    }
-
-    val formattedNotificationTitle: String
-        get() = when {
-            isWaiting -> "Đang chờ hướng dẫn"
-            isDestination -> "Đã đến nơi"
-            else -> formattedTitle
-        }
-
     /// Định dạng nội dung thông báo đa ngôn ngữ ngắn gọn cho đồng hồ
     fun formatContent(context: Context): String {
         if (isWaiting) return context.getString(R.string.content_waiting)

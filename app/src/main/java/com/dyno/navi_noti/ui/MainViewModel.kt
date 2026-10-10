@@ -3,11 +3,14 @@ package com.dyno.navi_noti.ui
 import android.app.Application
 import android.content.ComponentName
 import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.dyno.navi_noti.data.model.AppLanguage
 import com.dyno.navi_noti.data.model.NavigationState
 import com.dyno.navi_noti.data.model.NavigationStep
+import com.dyno.navi_noti.data.model.NotificationStyle
+import com.dyno.navi_noti.data.model.NotificationTemplate
 import com.dyno.navi_noti.data.model.ThemeMode
 import com.dyno.navi_noti.data.preference.PreferencesManager
 import com.dyno.navi_noti.data.repository.NavigationRepository
@@ -26,6 +29,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val themeMode: StateFlow<ThemeMode> = preferencesManager.themeMode
     val appLanguage: StateFlow<AppLanguage> = preferencesManager.appLanguage
+    val notificationStyle: StateFlow<NotificationStyle> = preferencesManager.notificationStyle
+    val notificationTemplate: StateFlow<NotificationTemplate> = preferencesManager.notificationTemplate
 
     val currentState: StateFlow<NavigationState> = NavigationRepository.currentState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NavigationState.IDLE)
@@ -38,6 +43,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _isNotificationListenerGranted = MutableStateFlow(false)
     val isNotificationListenerGranted: StateFlow<Boolean> = _isNotificationListenerGranted.asStateFlow()
+
+    private val _isPostNotificationGranted = MutableStateFlow(true)
+    val isPostNotificationGranted: StateFlow<Boolean> = _isPostNotificationGranted.asStateFlow()
 
     init {
         checkPermission()
@@ -53,6 +61,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         preferencesManager.setAppLanguage(lang)
     }
 
+    fun setNotificationStyle(style: NotificationStyle) {
+        preferencesManager.setNotificationStyle(style)
+    }
+
+    fun setNotificationTemplate(template: NotificationTemplate) {
+        preferencesManager.setNotificationTemplate(template)
+    }
+
     /// Kiểm tra quyền truy cập thông báo hệ thống (Notification Listener Access)
     fun checkPermission() {
         val context = getApplication<Application>()
@@ -63,6 +79,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             component?.packageName == packageName
         } == true
         _isNotificationListenerGranted.value = isGranted
+        _isPostNotificationGranted.value = NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
     /// Kích hoạt chạy thử kịch bản hành trình mẫu trên đồng hồ

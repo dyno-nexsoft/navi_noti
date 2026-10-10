@@ -4,23 +4,9 @@
     <string name="notification_channel_desc">Shows compact navigation notifications optimized for smartwatches</string>
     <string name="subtitle">Navigation on your watch</string>
 
-    <!-- Permissions -->
-    <string name="perm_ready_title">Notifications ready</string>
-    <string name="perm_needed_title">Notification access needed</string>
-    <string name="perm_ready_desc">The app is ready to forward navigation steps from Google Maps to your watch.</string>
-    <string name="perm_needed_desc">To display navigation on your watch, the app requires permission to read Google Maps notifications.</string>
-    <string name="perm_grant_btn">Grant Permission</string>
-
     <!-- Navigation Status -->
-    <string name="journey_status_title">Journey</string>
     <string name="no_noti_on_watch">No watch alert</string>
     <string name="start_maps_or_demo">Open Maps or run demo</string>
-
-    <!-- Demo Controls -->
-    <string name="demo_journey_title">Route demo</string>
-    <string name="demo_journey_desc">Try left turns, the second exit with its destination road, waiting for guidance, and arrival to check smartwatch notifications.</string>
-    <string name="demo_start_btn">Start Demo</string>
-    <string name="demo_stop_btn">Stop Demo</string>
 
     <!-- User Guide -->
     <string name="how_it_works_title">Quick guide</string>
@@ -60,13 +46,10 @@
     <string name="action_keep_left">Keep left</string>
     <string name="action_keep_right">Keep right</string>
     <string name="action_u_turn">Make a U-turn</string>
-    <string name="action_roundabout">Take exit</string>
     <string name="action_arrived">Arrived</string>
     <string name="action_waiting">Waiting for instruction</string>
 
     <!-- Notification Content -->
-    <string name="content_remaining_turn">In %1$s: %2$s onto %3$s</string>
-    <string name="content_remaining_turn_no_street">In %1$s: %2$s</string>
     <string name="content_remaining_action">In %1$s · %2$s</string>
     <string name="content_remaining_action_street">In %1$s · %2$s onto %3$s</string>
     <string name="content_remaining_straight_street">In %1$s · %2$s on %3$s</string>
@@ -78,4 +61,34 @@
     <string name="content_approaching_no_street">Approaching turn</string>
     <string name="content_waiting">Updating next route…</string>
     <string name="content_arrived">Destination reached</string>
+
+    <!-- Setup & journey -->
+    <string name="setup_title">Setup</string>
+    <string name="setup_ready">Ready for navigation on your watch</string>
+    <string name="setup_listener_title">Read Google Maps notifications</string>
+    <string name="setup_listener_desc">Lets Navi Noti see the next turn from Maps.</string>
+    <string name="setup_post_title">Show notifications</string>
+    <string name="setup_post_desc">Needed to send the turn alert to your watch.</string>
+    <string name="setup_open_btn">Enable</string>
+    <string name="watch_preview_label">On your watch</string>
+    <string name="open_maps_btn">Open Maps</string>
+    <string name="demo_short_btn">Demo</string>
+    <string name="stop_short_btn">Stop</string>
+
+    <!-- Notification style -->
+    <string name="notification_style_label">Watch notification style</string>
+    <string name="style_detailed">Detailed</string>
+    <string name="style_detailed_desc">Turn left · In 200 m · Turn left onto Main St</string>
+    <string name="style_arrow">Arrow</string>
+    <string name="style_arrow_desc">← Turn left · 200 m · Main St</string>
+    <string name="style_compact">Compact</string>
+    <string name="style_compact_desc">← 200 m · Turn left · Main St — best for small bands</string>
+    <string name="style_custom">Custom</string>
+    <string name="style_custom_desc">Write your own title and content</string>
+    <string name="template_title_label">Title template</string>
+    <string name="template_content_label">Content template</string>
+    <string name="template_hint">Tap a variable to insert it</string>
+    <string name="template_reset">Reset</string>
+    <string name="preview_sample">Example</string>
+    <string name="preview_sample_street">Main Street</string>
 </resources>

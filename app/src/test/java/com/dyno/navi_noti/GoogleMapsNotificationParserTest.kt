@@ -20,7 +20,7 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đường Nguyễn Huệ", step?.streetName)
         assertEquals("250 m", step?.distanceText)
         assertEquals("Rẽ trái", step?.formattedTitle)
-        assertEquals("Rẽ trái", step?.formattedNotificationTitle)
+        assertEquals("Rẽ trái", step?.formattedTitle)
         assertEquals("Còn 250 m · Rẽ trái vào Đường Nguyễn Huệ", step?.formattedContent)
     }
 
@@ -44,7 +44,7 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertTrue(step!!.isApproaching)
         assertEquals("→", step.maneuver.notificationArrow)
-        assertEquals("Rẽ phải", step.formattedNotificationTitle)
+        assertEquals("Rẽ phải", step.formattedTitle)
         assertEquals("Còn 20 m · Rẽ phải vào Đường Trần Hưng Đạo", step.formattedContent)
     }
 
@@ -72,7 +72,7 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertEquals(ManeuverType.UNKNOWN, step?.maneuver)
         assertEquals(null, step?.maneuver?.notificationArrow)
-        assertEquals("Điện Biên Phủ", step?.formattedNotificationTitle)
+        assertEquals("Điện Biên Phủ", step?.formattedTitle)
         assertEquals("Còn 40 m", step?.formattedContent)
     }
 
@@ -110,7 +110,7 @@ class GoogleMapsNotificationParserTest {
         assertEquals("Đi theo lối ra thứ 2", step?.action)
         assertEquals(ManeuverType.ROUNDABOUT, step?.maneuver)
         assertEquals("Vòng xoay Dân Chủ", step?.streetName)
-        assertEquals("Đi theo lối ra thứ 2", step?.formattedNotificationTitle)
+        assertEquals("Đi theo lối ra thứ 2", step?.formattedTitle)
         assertEquals(
             "Còn 300 m · Đi theo lối ra thứ 2 vào Vòng xoay Dân Chủ",
             step?.formattedContent
@@ -149,7 +149,7 @@ class GoogleMapsNotificationParserTest {
         )
 
         assertNotNull(step)
-        assertEquals("Đi thẳng", step?.formattedNotificationTitle)
+        assertEquals("Đi thẳng", step?.formattedTitle)
         assertEquals("Còn 150 m · Đi thẳng trên Đường Lê Lợi", step?.formattedContent)
     }
 

@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.dyno.navi_noti.MainActivity
 import com.dyno.navi_noti.R
 import com.dyno.navi_noti.data.model.NavigationStep
+import com.dyno.navi_noti.data.model.NotificationFormatter
 import com.dyno.navi_noti.data.preference.PreferencesManager
 import com.dyno.navi_noti.util.withAppLanguage
 
@@ -60,8 +61,13 @@ class NavigationNotificationManager(private val context: Context) {
     }
 
     private fun postNotification(step: NavigationStep, silent: Boolean) {
-        val notificationContext = context.withAppLanguage(
-            PreferencesManager(context).appLanguage.value
+        val preferences = PreferencesManager(context)
+        val notificationContext = context.withAppLanguage(preferences.appLanguage.value)
+        val text = NotificationFormatter.format(
+            step,
+            notificationContext,
+            preferences.notificationStyle.value,
+            preferences.notificationTemplate.value
         )
 
         val openAppIntent = Intent(context, MainActivity::class.java).apply {
@@ -77,12 +83,9 @@ class NavigationNotificationManager(private val context: Context) {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(step.maneuver.iconRes)
             .setLargeIcon(lastArrowIcon)
-            .setContentTitle(step.formatNotificationTitle(notificationContext))
-            .setContentText(step.formatContent(notificationContext))
-            .setStyle(
-                NotificationCompat.BigTextStyle()
-                    .bigText(step.formatContent(notificationContext))
-            )
+            .setContentTitle(text.title)
+            .setContentText(text.content)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text.content))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_NAVIGATION)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

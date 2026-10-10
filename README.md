@@ -39,6 +39,23 @@ Nếu Google Maps không cung cấp tên đường hoặc thao tác đủ rõ tr
 
 Khi hành động đã xảy ra hoặc hành trình đã kết thúc, không tiếp tục hiển thị khoảng cách cũ. Nếu chưa có hướng dẫn kế tiếp, cần thể hiện trạng thái chờ thay vì để người dùng hiểu nhầm rằng thông tin cũ vẫn còn hiệu lực.
 
+### Kiểu thông báo
+
+Chọn trong phần Cài đặt, có xem trước trực tiếp như trên đồng hồ:
+
+| Kiểu | Tiêu đề | Nội dung |
+|---|---|---|
+| Chi tiết (mặc định) | Rẽ trái | Còn 200 m · Rẽ trái vào Nguyễn Huệ |
+| Mũi tên | ← Rẽ trái | 200 m · Nguyễn Huệ |
+| Gọn (band màn nhỏ) | ← 200 m | Rẽ trái · Nguyễn Huệ |
+| Tuỳ chỉnh | tự đặt | tự đặt |
+
+Mẫu tuỳ chỉnh dùng các biến `{arrow}` `{action}` `{distance}` `{street}`; biến nào trống sẽ tự bỏ cùng dấu phân cách thừa.
+
+### Hướng rẽ khi Maps không ghi bằng chữ
+
+Google Maps (nhất là Live Update trên Android 16) thường chỉ gửi khoảng cách + tên đường, còn hướng rẽ nằm ở icon mũi tên. Navi Noti đọc icon đó (ghi nhớ icon đã từng đi kèm hướng rõ ràng, nếu chưa có thì phân tích hình dạng mũi tên) để luôn biết rẽ trái/phải/chếch/quay đầu/vòng xoay.
+
 ## Cách thông báo thay đổi
 
 - Chỉ phát cảnh báo tại các mốc 100 m, 30 m, khi tới điểm rẽ (Maps chuyển maneuver hoặc sang trạng thái chờ hướng dẫn), và khi đến đích.

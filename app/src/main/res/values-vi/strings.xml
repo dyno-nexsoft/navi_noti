@@ -4,23 +4,9 @@
     <string name="notification_channel_desc">Hiển thị thông báo điều hướng ngắn gọn tối ưu cho đồng hồ thông minh</string>
     <string name="subtitle">Chỉ đường trên đồng hồ</string>
 
-    <!-- Quyền truy cập -->
-    <string name="perm_ready_title">Thông báo: Sẵn sàng</string>
-    <string name="perm_needed_title">Cần quyền thông báo</string>
-    <string name="perm_ready_desc">Ứng dụng đã sẵn sàng nhận chỉ đường từ Google Maps và chuyển sang đồng hồ của bạn.</string>
-    <string name="perm_needed_desc">Để hiển thị chỉ đường trên đồng hồ, ứng dụng cần quyền đọc thông báo điều hướng từ Google Maps.</string>
-    <string name="perm_grant_btn">Cấp quyền ngay</string>
-
     <!-- Trạng thái hành trình -->
-    <string name="journey_status_title">Hành trình</string>
     <string name="no_noti_on_watch">Chưa có thông báo</string>
     <string name="start_maps_or_demo">Mở Maps hoặc chạy thử</string>
-
-    <!-- Điều khiển thử nghiệm -->
-    <string name="demo_journey_title">Chạy thử hành trình</string>
-    <string name="demo_journey_desc">Chạy thử các mốc rẽ trái, lối ra thứ 2 kèm tên đường, chờ hướng dẫn và đến nơi để kiểm tra thông báo trên đồng hồ.</string>
-    <string name="demo_start_btn">Bắt đầu chạy thử</string>
-    <string name="demo_stop_btn">Dừng chạy thử</string>
 
     <!-- Hướng dẫn sử dụng -->
     <string name="how_it_works_title">Hướng dẫn nhanh</string>
@@ -60,13 +46,10 @@
     <string name="action_keep_left">Đi bên trái</string>
     <string name="action_keep_right">Đi bên phải</string>
     <string name="action_u_turn">Quay đầu</string>
-    <string name="action_roundabout">Đi theo lối ra</string>
     <string name="action_arrived">Đã đến nơi</string>
     <string name="action_waiting">Đang chờ hướng dẫn</string>
 
     <!-- Nội dung thông báo -->
-    <string name="content_remaining_turn">Còn %1$s: %2$s vào %3$s</string>
-    <string name="content_remaining_turn_no_street">Còn %1$s: %2$s</string>
     <string name="content_remaining_action">Còn %1$s · %2$s</string>
     <string name="content_remaining_action_street">Còn %1$s · %2$s vào %3$s</string>
     <string name="content_remaining_straight_street">Còn %1$s · %2$s trên %3$s</string>
@@ -78,4 +61,34 @@
     <string name="content_approaching_no_street">Đang đến điểm rẽ</string>
     <string name="content_waiting">Đang cập nhật lộ trình tiếp theo…</string>
     <string name="content_arrived">Bạn đã đến đích an toàn</string>
+
+    <!-- Setup & journey -->
+    <string name="setup_title">Thiết lập</string>
+    <string name="setup_ready">Sẵn sàng chỉ đường trên đồng hồ</string>
+    <string name="setup_listener_title">Đọc thông báo Google Maps</string>
+    <string name="setup_listener_desc">Để Navi Noti biết bước rẽ tiếp theo từ Maps.</string>
+    <string name="setup_post_title">Hiển thị thông báo</string>
+    <string name="setup_post_desc">Cần để gửi cảnh báo rẽ sang đồng hồ.</string>
+    <string name="setup_open_btn">Bật</string>
+    <string name="watch_preview_label">Trên đồng hồ</string>
+    <string name="open_maps_btn">Mở Maps</string>
+    <string name="demo_short_btn">Chạy thử</string>
+    <string name="stop_short_btn">Dừng</string>
+
+    <!-- Notification style -->
+    <string name="notification_style_label">Kiểu thông báo trên đồng hồ</string>
+    <string name="style_detailed">Chi tiết</string>
+    <string name="style_detailed_desc">Rẽ trái · Còn 200 m · Rẽ trái vào Nguyễn Huệ</string>
+    <string name="style_arrow">Mũi tên</string>
+    <string name="style_arrow_desc">← Rẽ trái · 200 m · Nguyễn Huệ</string>
+    <string name="style_compact">Gọn</string>
+    <string name="style_compact_desc">← 200 m · Rẽ trái · Nguyễn Huệ — hợp với band màn nhỏ</string>
+    <string name="style_custom">Tuỳ chỉnh</string>
+    <string name="style_custom_desc">Tự đặt tiêu đề và nội dung</string>
+    <string name="template_title_label">Mẫu tiêu đề</string>
+    <string name="template_content_label">Mẫu nội dung</string>
+    <string name="template_hint">Chạm vào biến để chèn</string>
+    <string name="template_reset">Mặc định</string>
+    <string name="preview_sample">Ví dụ</string>
+    <string name="preview_sample_street">Đường Nguyễn Huệ</string>
 </resources>
