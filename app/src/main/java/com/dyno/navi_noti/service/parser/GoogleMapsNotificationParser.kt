@@ -20,6 +20,14 @@ object GoogleMapsNotificationParser {
         "Rẽ phải vào" to "Rẽ phải",
         "Rẽ chếch sang trái vào" to "Rẽ chếch sang trái",
         "Rẽ chếch sang phải vào" to "Rẽ chếch sang phải",
+        "Đi chếch sang trái vào" to "Rẽ chếch sang trái",
+        "Đi chếch sang phải vào" to "Rẽ chếch sang phải",
+        "Rẽ gắt sang trái vào" to "Rẽ gắt sang trái",
+        "Rẽ gắt sang phải vào" to "Rẽ gắt sang phải",
+        "Quay đầu tại" to "Quay đầu",
+        "Quay đầu vào" to "Quay đầu",
+        "Giữ bên trái vào" to "Giữ bên trái",
+        "Giữ bên phải vào" to "Giữ bên phải",
         "Đi thẳng về phía" to "Đi thẳng",
         "Đi tiếp trên" to "Đi thẳng",
         "Đi thẳng trên" to "Đi thẳng",
@@ -32,6 +40,12 @@ object GoogleMapsNotificationParser {
         "Turn right onto" to "Turn right",
         "Turn left" to "Turn left",
         "Turn right" to "Turn right",
+        "Slight left onto" to "Slight left",
+        "Slight right onto" to "Slight right",
+        "Sharp left onto" to "Sharp left",
+        "Sharp right onto" to "Sharp right",
+        "Make a U-turn onto" to "U-turn",
+        "Make a U-turn at" to "U-turn",
         "Keep left onto" to "Keep left",
         "Keep right onto" to "Keep right",
         "Continue onto" to "Continue straight",
@@ -45,12 +59,17 @@ object GoogleMapsNotificationParser {
         "Arrived at" to "Arrived"
     )
 
-    /// Phân tích title và text từ thông báo để trích xuất bước điều hướng chuẩn cho đồng hồ
+    private val towardPrefixes = listOf("về phía", "hướng về", "toward", "towards")
+
+    /// Phân tích title và text từ thông báo để trích xuất bước điều hướng chuẩn cho đồng hồ.
+    /// [iconManeuver] là hướng đọc được từ icon mũi tên của Maps; dùng khi text không ghi rõ hướng rẽ
+    /// (Live Update của Maps thường chỉ có khoảng cách + tên đường, hướng nằm ở icon).
     fun parse(
         title: String?,
         text: String?,
         subText: String? = null,
-        additionalTexts: List<String> = emptyList()
+        additionalTexts: List<String> = emptyList(),
+        iconManeuver: ManeuverType? = null
     ): NavigationStep? {
         val rawTitle = title?.trim() ?: ""
         val rawText = text?.trim() ?: ""
@@ -67,7 +86,8 @@ object GoogleMapsNotificationParser {
         }
 
         val distanceInfo = extractDistance(candidates)
-        val actionAndStreet = extractActionAndStreet(candidates, distanceInfo?.rawMatch)
+        val textResult = extractActionAndStreet(candidates, distanceInfo?.rawMatch)
+        val actionAndStreet = applyIconManeuver(textResult, candidates, distanceInfo?.rawMatch, iconManeuver)
 
         val distanceMeters = distanceInfo?.meters
         val isApproaching = distanceMeters != null && distanceMeters <= APPROACHING_DISTANCE_METERS
@@ -75,7 +95,7 @@ object GoogleMapsNotificationParser {
         return NavigationStep(
             action = actionAndStreet.action,
             distanceText = distanceInfo?.displayText,
-            streetName = actionAndStreet.streetName,
+            streetName = actionAndStreet.streetName?.let(::stripToward),
             distanceMeters = distanceMeters,
             maneuver = ManeuverType.fromText(actionAndStreet.action),
             isApproaching = isApproaching
@@ -122,13 +142,7 @@ object GoogleMapsNotificationParser {
             distanceStr?.let { candidate.replace(it, "") }?.trim() ?: candidate.trim()
         }
         val parsedCandidates = cleanedCandidates.mapNotNull(::parseActionCandidate)
-        val explicitManeuver = parsedCandidates.firstOrNull {
-            it.maneuver in setOf(
-                ManeuverType.TURN_LEFT,
-                ManeuverType.TURN_RIGHT,
-                ManeuverType.ROUNDABOUT
-            )
-        }
+        val explicitManeuver = parsedCandidates.firstOrNull { it.maneuver.isTurn }
         if (explicitManeuver != null) {
             val street = explicitManeuver.result.streetName
                 ?: cleanedCandidates.firstNotNullOfOrNull { candidate ->
@@ -150,6 +164,40 @@ object GoogleMapsNotificationParser {
             action = cleanTitle.ifBlank { cleanText.ifBlank { "Tiếp tục" } },
             streetName = cleanText.ifBlank { null }
         )
+    }
+
+    /// Icon chỉ thay thế khi text không có hướng rẽ rõ ràng: text rẽ > icon > text đi thẳng/không rõ
+    private fun applyIconManeuver(
+        textResult: ActionStreetResult,
+        candidates: List<String>,
+        distanceStr: String?,
+        iconManeuver: ManeuverType?
+    ): ActionStreetResult {
+        if (iconManeuver == null || iconManeuver == ManeuverType.UNKNOWN) return textResult
+        val textManeuver = ManeuverType.fromText(textResult.action)
+        val canOverride = when (textManeuver) {
+            ManeuverType.UNKNOWN -> true
+            ManeuverType.STRAIGHT -> iconManeuver.isTurn
+            else -> false
+        }
+        if (!canOverride) return textResult
+
+        val street = if (textManeuver == ManeuverType.UNKNOWN) {
+            // Text không có thao tác thì dòng đầu tiên còn lại chính là tên đường sắp đi vào
+            candidates.asSequence()
+                .map { candidate -> distanceStr?.let { candidate.replace(it, "") } ?: candidate }
+                .map { it.trim(' ', '-', '·', ':') }
+                .firstOrNull { it.isNotBlank() && ManeuverType.fromText(it) == ManeuverType.UNKNOWN }
+        } else {
+            textResult.streetName
+        }
+        return ActionStreetResult(iconManeuver.defaultActionName, street)
+    }
+
+    private fun stripToward(street: String): String? {
+        val prefix = towardPrefixes.firstOrNull { street.startsWith(it, ignoreCase = true) }
+        val cleaned = prefix?.let { street.substring(it.length) } ?: street
+        return cleaned.trim(' ', '-', '·', ':').ifBlank { null }
     }
 
     private fun parseActionCandidate(candidate: String): ParsedAction? {

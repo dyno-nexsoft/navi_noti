@@ -58,6 +58,15 @@ Tài liệu này mô tả chi tiết kiến trúc, luồng xử lý và các quy
 - Hỗ trợ phân tích cả tiếng Việt (*"Rẽ trái vào...", "Đi tiếp trên...", "Đi theo lối ra..."*) và tiếng Anh (*"Turn left onto...", "Continue on...", "Take exit...", "In 500 ft"*).
 - Quy đổi mọi đơn vị (m, km, ft, mi) sang mét phục vụ thuật toán cảnh báo rung mốc ~100m, ~30m và điểm rẽ.
 
+### Nhận diện hướng rẽ từ icon (`service/icon`)
+- Google Maps (đặc biệt bản Live Update / ProgressStyle trên Android 16) thường chỉ ghi khoảng cách và tên đường bằng chữ; hướng rẽ nằm ở icon mũi tên (progress tracker icon, large icon, small icon trên chip status bar) và `android.shortCriticalText`.
+- `ManeuverIconReader` đọc các icon này thành `IconMask`, rồi:
+  1. Tra `ManeuverIconMemory`: icon từng xuất hiện cùng hướng rẽ ghi rõ bằng chữ sẽ được ghi nhớ (vân tay 16x16, lưu SharedPreferences). Icon bị gắn với nhiều hướng mâu thuẫn (ví dụ logo Maps) bị bỏ qua.
+  2. Nếu chưa nhớ, `ManeuverIconAnalyzer` phân tích hình học: thân mũi tên chạm đáy icon, phần lệch khỏi thân cho biết trái/phải, góc nghiêng phân biệt rẽ thường/chếch/gắt/quay đầu, lỗ tròn khép kín là vòng xoay.
+- Thứ tự ưu tiên: hướng rẽ ghi rõ bằng chữ > icon > chữ "đi thẳng"/không rõ.
+- Icon mũi tên gốc được chuyển tiếp làm large icon của notification Navi Noti.
+- Debug trên máy thật: `adb shell setprop log.tag.NaviNoti DEBUG` để log toàn bộ extras của notification Maps.
+
 ### Ranh giới nguồn dữ liệu
 - Navi Noti hiện chỉ nhận được nội dung mà Google Maps đưa vào notification thông qua Android `NotificationListenerService`; trường/tên đường có thể thiếu tùy phiên bản Maps, ngôn ngữ và trạng thái điều hướng.
 - Google Maps không cung cấp API Android công khai để ứng dụng bên thứ ba đọc tuyến đang điều hướng, điểm đến hoặc danh sách maneuver của phiên Maps hiện tại. Google Maps URLs chủ yếu mở Maps chứ không trả về trạng thái dẫn đường.

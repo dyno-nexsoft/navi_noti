@@ -176,4 +176,58 @@ class GoogleMapsNotificationParserTest {
         assertNotNull(step)
         assertTrue(step!!.isDestination)
     }
+
+    @Test
+    fun parse_liveUpdateUsesIconWhenTextHasNoDirection() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "200 m",
+            text = "về phía Đường Nguyễn Huệ",
+            iconManeuver = ManeuverType.TURN_LEFT
+        )
+
+        assertNotNull(step)
+        assertEquals(ManeuverType.TURN_LEFT, step?.maneuver)
+        assertEquals("Đường Nguyễn Huệ", step?.streetName)
+        assertEquals("Còn 200 m · Rẽ trái vào Đường Nguyễn Huệ", step?.formattedContent)
+    }
+
+    @Test
+    fun parse_iconTurnReplacesStreetOnlyTitle() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "Điện Biên Phủ",
+            text = "40 m",
+            iconManeuver = ManeuverType.TURN_RIGHT
+        )
+
+        assertNotNull(step)
+        assertEquals(ManeuverType.TURN_RIGHT, step?.maneuver)
+        assertEquals("Điện Biên Phủ", step?.streetName)
+    }
+
+    @Test
+    fun parse_explicitTextTurnWinsOverIcon() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "100 m",
+            text = "Rẽ phải vào Đường Lê Lợi",
+            iconManeuver = ManeuverType.TURN_LEFT
+        )
+
+        assertEquals(ManeuverType.TURN_RIGHT, step?.maneuver)
+    }
+
+    @Test
+    fun parse_uTurnAndSlightTurnText() {
+        assertEquals(
+            ManeuverType.U_TURN,
+            GoogleMapsNotificationParser.parse("80 m", "Quay đầu tại Ngã tư Sở")?.maneuver
+        )
+        assertEquals(
+            ManeuverType.SLIGHT_LEFT,
+            GoogleMapsNotificationParser.parse("80 m", "Rẽ chếch sang trái vào Phố Huế")?.maneuver
+        )
+        assertEquals(
+            ManeuverType.SHARP_RIGHT,
+            GoogleMapsNotificationParser.parse("In 300 ft", "Sharp right onto Pine St")?.maneuver
+        )
+    }
 }

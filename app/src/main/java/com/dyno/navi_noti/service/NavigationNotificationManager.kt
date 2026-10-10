@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -20,6 +21,7 @@ class NavigationNotificationManager(private val context: Context) {
     private val notificationManager = NotificationManagerCompat.from(context)
     private val alertPolicy = NavigationAlertPolicy()
     private var lastPostedStep: NavigationStep? = null
+    private var lastArrowIcon: Bitmap? = null
 
     init {
         createNotificationChannel()
@@ -44,9 +46,11 @@ class NavigationNotificationManager(private val context: Context) {
     }
 
     /// Xuất bản hoặc cập nhật thông báo điều hướng duy nhất tới đồng hồ
-    fun showOrUpdateNotification(step: NavigationStep) {
+    /// [arrowIcon] là mũi tên gốc của Google Maps, chuyển tiếp để đồng hồ hiển thị đúng hướng rẽ
+    fun showOrUpdateNotification(step: NavigationStep, arrowIcon: Bitmap? = null) {
         val shouldAlert = alertPolicy.shouldAlert(step)
-        if (!shouldAlert && step == lastPostedStep) return
+        if (!shouldAlert && step == lastPostedStep && arrowIcon?.sameAs(lastArrowIcon) != false) return
+        lastArrowIcon = arrowIcon
         postNotification(step, silent = !shouldAlert)
     }
 
@@ -71,7 +75,8 @@ class NavigationNotificationManager(private val context: Context) {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_nav_notification)
+            .setSmallIcon(step.maneuver.iconRes)
+            .setLargeIcon(lastArrowIcon)
             .setContentTitle(step.formatNotificationTitle(notificationContext))
             .setContentText(step.formatContent(notificationContext))
             .setStyle(
@@ -100,6 +105,7 @@ class NavigationNotificationManager(private val context: Context) {
         notificationManager.cancel(NOTIFICATION_ID)
         alertPolicy.reset()
         lastPostedStep = null
+        lastArrowIcon = null
     }
 
     companion object {

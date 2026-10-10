@@ -53,6 +53,13 @@
     <string name="action_turn_left">Rẽ trái</string>
     <string name="action_turn_right">Rẽ phải</string>
     <string name="action_straight">Đi thẳng</string>
+    <string name="action_slight_left">Chếch trái</string>
+    <string name="action_slight_right">Chếch phải</string>
+    <string name="action_sharp_left">Rẽ gắt trái</string>
+    <string name="action_sharp_right">Rẽ gắt phải</string>
+    <string name="action_keep_left">Đi bên trái</string>
+    <string name="action_keep_right">Đi bên phải</string>
+    <string name="action_u_turn">Quay đầu</string>
     <string name="action_roundabout">Đi theo lối ra</string>
     <string name="action_arrived">Đã đến nơi</string>
     <string name="action_waiting">Đang chờ hướng dẫn</string>

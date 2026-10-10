@@ -18,11 +18,7 @@ data class NavigationStep(
     fun formatTitle(context: Context): String = when {
         isDestination -> context.getString(R.string.action_arrived)
         isWaiting -> context.getString(R.string.action_waiting)
-        maneuver == ManeuverType.TURN_LEFT -> context.getString(R.string.action_turn_left)
-        maneuver == ManeuverType.TURN_RIGHT -> context.getString(R.string.action_turn_right)
-        maneuver == ManeuverType.STRAIGHT -> context.getString(R.string.action_straight)
-        maneuver == ManeuverType.ROUNDABOUT -> action
-        else -> action
+        else -> maneuver.titleRes?.let(context::getString) ?: action
     }
 
     /// Tiêu đề đầy đủ dùng chung cho notification và phần xem trước trong ứng dụng

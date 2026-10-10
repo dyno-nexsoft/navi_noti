@@ -1,0 +1,185 @@
+package com.dyno.navi_noti
+
+import com.dyno.navi_noti.data.model.ManeuverType
+import com.dyno.navi_noti.service.icon.IconMask
+import com.dyno.navi_noti.service.icon.ManeuverIconAnalyzer
+import com.dyno.navi_noti.service.icon.ManeuverIconMemory
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Test
+
+class ManeuverIconTest {
+
+    private val straight = listOf(
+        "................",
+        ".......##.......",
+        "......####......",
+        ".....######.....",
+        "....########....",
+        "...####..####...",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        "................"
+    )
+
+    private val turnLeft = listOf(
+        "................",
+        "...#............",
+        "..##............",
+        ".##########.....",
+        "###########.....",
+        ".##########.....",
+        "..##.....##.....",
+        "...#.....##.....",
+        ".........##.....",
+        ".........##.....",
+        ".........##.....",
+        ".........##.....",
+        ".........##.....",
+        ".........##.....",
+        ".........##.....",
+        "................"
+    )
+
+    private val slightLeft = listOf(
+        "................",
+        "..#####.........",
+        "..####..........",
+        "..####..........",
+        "..#####.........",
+        "..##.###........",
+        "......###.......",
+        ".......###......",
+        "........###.....",
+        ".........###....",
+        "..........##....",
+        "..........##....",
+        "..........##....",
+        "..........##....",
+        "..........##....",
+        "................"
+    )
+
+    private val sharpLeft = listOf(
+        "................",
+        "..........##....",
+        ".........###....",
+        "........###.....",
+        ".......###......",
+        "......###.##....",
+        ".....###..##....",
+        "....###...##....",
+        "...###....##....",
+        "..##.#....##....",
+        "..##......##....",
+        "..##......##....",
+        "..#####...##....",
+        "..#####...##....",
+        "..........##....",
+        "................"
+    )
+
+    private val uTurn = listOf(
+        "................",
+        "....######......",
+        "...########.....",
+        "..###....###....",
+        "..##......##....",
+        "..##......##....",
+        "..##......##....",
+        "..##......##....",
+        "..##......##....",
+        "######....##....",
+        ".####.....##....",
+        "..##......##....",
+        "..........##....",
+        "..........##....",
+        "..........##....",
+        "................"
+    )
+
+    private val roundabout = listOf(
+        "................",
+        "......####......",
+        "....########....",
+        "...###....###...",
+        "...##......##...",
+        "...##......##...",
+        "...###....###...",
+        "....########....",
+        "......####......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        ".......##.......",
+        "................"
+    )
+
+    @Test
+    fun classifiesArrowShapes() {
+        assertEquals(ManeuverType.STRAIGHT, classify(straight))
+        assertEquals(ManeuverType.TURN_LEFT, classify(turnLeft))
+        assertEquals(ManeuverType.TURN_RIGHT, classify(mirror(turnLeft)))
+        assertEquals(ManeuverType.SLIGHT_LEFT, classify(slightLeft))
+        assertEquals(ManeuverType.SLIGHT_RIGHT, classify(mirror(slightLeft)))
+        assertEquals(ManeuverType.SHARP_LEFT, classify(sharpLeft))
+        assertEquals(ManeuverType.SHARP_RIGHT, classify(mirror(sharpLeft)))
+        assertEquals(ManeuverType.U_TURN, classify(uTurn))
+        assertEquals(ManeuverType.ROUNDABOUT, classify(roundabout))
+    }
+
+    @Test
+    fun emptyIconHasNoManeuver() {
+        assertNull(classify(List(16) { "................" }))
+    }
+
+    @Test
+    fun memoryRecallsLearnedIcon() {
+        val memory = ManeuverIconMemory(InMemoryStorage())
+        val fingerprint = IconMask.fromRows(turnLeft).fingerprint()
+
+        assertNull(memory.lookup(fingerprint))
+        memory.learn(fingerprint, ManeuverType.TURN_LEFT)
+        assertEquals(ManeuverType.TURN_LEFT, memory.lookup(fingerprint))
+    }
+
+    @Test
+    fun memoryIgnoresIconsSeenWithConflictingManeuvers() {
+        val memory = ManeuverIconMemory(InMemoryStorage())
+        val logo = IconMask.fromRows(roundabout).fingerprint()
+
+        memory.learn(logo, ManeuverType.TURN_LEFT)
+        memory.learn(logo, ManeuverType.TURN_RIGHT)
+        assertNull(memory.lookup(logo))
+    }
+
+    @Test
+    fun memorySurvivesReload() {
+        val storage = InMemoryStorage()
+        val fingerprint = IconMask.fromRows(uTurn).fingerprint()
+        ManeuverIconMemory(storage).learn(fingerprint, ManeuverType.U_TURN)
+
+        assertEquals(ManeuverType.U_TURN, ManeuverIconMemory(storage).lookup(fingerprint))
+    }
+
+    private fun classify(rows: List<String>) = ManeuverIconAnalyzer.classify(IconMask.fromRows(rows))
+
+    private fun mirror(rows: List<String>) = rows.map(String::reversed)
+
+    private class InMemoryStorage : ManeuverIconMemory.Storage {
+        private var value: String? = null
+        override fun load() = value
+        override fun save(value: String) {
+            this.value = value
+        }
+    }
+}

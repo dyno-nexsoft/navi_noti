@@ -53,6 +53,13 @@
     <string name="action_turn_left">Turn left</string>
     <string name="action_turn_right">Turn right</string>
     <string name="action_straight">Continue straight</string>
+    <string name="action_slight_left">Slight left</string>
+    <string name="action_slight_right">Slight right</string>
+    <string name="action_sharp_left">Sharp left</string>
+    <string name="action_sharp_right">Sharp right</string>
+    <string name="action_keep_left">Keep left</string>
+    <string name="action_keep_right">Keep right</string>
+    <string name="action_u_turn">Make a U-turn</string>
     <string name="action_roundabout">Take exit</string>
     <string name="action_arrived">Arrived</string>
     <string name="action_waiting">Waiting for instruction</string>
