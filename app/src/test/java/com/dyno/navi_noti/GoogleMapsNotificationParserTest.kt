@@ -257,4 +257,18 @@ class GoogleMapsNotificationParserTest {
         assertEquals(false, step?.isDestination)
         assertEquals("Notre Dame Cathedral of Saigon", step?.streetName)
     }
+
+    @Test
+    fun parse_turnWithoutStreetDoesNotUseEtaLine() {
+        val step = GoogleMapsNotificationParser.parse(
+            title = "1.6 km",
+            text = "Turn right",
+            subText = "6 min · 2.1 km · 11:56 PM ETA"
+        )
+
+        assertEquals(ManeuverType.TURN_RIGHT, step?.maneuver)
+        assertEquals("1.6 km", step?.distanceText)
+        assertEquals(null, step?.streetName)
+        assertEquals("Còn 1.6 km · Rẽ phải", step?.formattedContent)
+    }
 }

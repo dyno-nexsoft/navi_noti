@@ -36,11 +36,20 @@ object NavigationRepository {
         }
     }
 
+    private val _isTripMuted = MutableStateFlow(false)
+    /// Người dùng bấm "Im lặng chuyến này": vẫn cập nhật nội dung nhưng không rung tới hết chuyến
+    val isTripMuted: StateFlow<Boolean> = _isTripMuted.asStateFlow()
+
+    fun setTripMuted(muted: Boolean) {
+        _isTripMuted.value = muted
+    }
+
     /// Cập nhật rõ ràng trạng thái điều hướng
     fun setState(state: NavigationState) {
         _currentState.value = state
         if (state == NavigationState.COMPLETED || state == NavigationState.PAUSED || state == NavigationState.IDLE) {
             _currentStep.value = null
+            _isTripMuted.value = false
         }
     }
 

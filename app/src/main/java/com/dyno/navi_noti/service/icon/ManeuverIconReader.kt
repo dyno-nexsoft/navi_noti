@@ -10,8 +10,8 @@ import android.util.Log
 import com.dyno.navi_noti.data.model.ManeuverType
 
 /// Đọc hướng rẽ từ các icon trong notification Google Maps.
-/// Maps bản mới (Live Update / ProgressStyle trên Android 16) đặt mũi tên ở small icon (chip status bar)
-/// và progress tracker icon; bản cũ đặt ở large icon.
+/// Mũi tên nằm ở large icon (đã kiểm chứng với Maps trên Android 16) và progress tracker icon của Live Update.
+/// Small icon là logo Maps cố định nên bỏ qua: học nó sẽ gán mọi bước thành một hướng.
 class ManeuverIconReader(private val context: Context) {
 
     private val memory = ManeuverIconMemory(object : ManeuverIconMemory.Storage {
@@ -26,8 +26,7 @@ class ManeuverIconReader(private val context: Context) {
 
     fun read(notification: Notification): IconReading {
         val icons = collectIcons(notification)
-        lastArrowBitmap = icons.firstOrNull { it.source != IconSource.SMALL }?.bitmap
-            ?: icons.firstOrNull()?.bitmap
+        lastArrowBitmap = icons.firstOrNull()?.bitmap
         val masks = icons.map { it.source to it.toMask() }
         return IconReading(masks)
     }
@@ -38,13 +37,11 @@ class ManeuverIconReader(private val context: Context) {
     }
 
     /// Ưu tiên icon đã ghi nhớ (chính xác), sau đó mới phân tích hình học.
-    /// Small icon có thể là logo Maps nên không dùng phân tích hình học cho nó.
     fun resolve(reading: IconReading): ManeuverType? {
         if (Log.isLoggable(TAG, Log.DEBUG)) logReading(reading)
         reading.masks.firstNotNullOfOrNull { (_, mask) -> memory.lookup(mask.fingerprint()) }
             ?.let { return it }
         return reading.masks
-            .filter { (source, _) -> source != IconSource.SMALL }
             .firstNotNullOfOrNull { (_, mask) -> ManeuverIconAnalyzer.classify(mask) }
     }
 
@@ -65,8 +62,7 @@ class ManeuverIconReader(private val context: Context) {
         val extras = notification.extras ?: Bundle.EMPTY
         return listOfNotNull(
             loadIcon(extras.iconOrBitmap(EXTRA_PROGRESS_TRACKER_ICON), IconSource.TRACKER),
-            loadIcon(notification.getLargeIcon() ?: extras.iconOrBitmap(Notification.EXTRA_LARGE_ICON), IconSource.LARGE),
-            loadIcon(notification.smallIcon, IconSource.SMALL)
+            loadIcon(notification.getLargeIcon() ?: extras.iconOrBitmap(Notification.EXTRA_LARGE_ICON), IconSource.LARGE)
         )
     }
 
@@ -95,7 +91,7 @@ class ManeuverIconReader(private val context: Context) {
         }
     }
 
-    enum class IconSource { TRACKER, LARGE, SMALL }
+    enum class IconSource { TRACKER, LARGE }
 
     class IconReading(val masks: List<Pair<IconSource, IconMask>>)
 

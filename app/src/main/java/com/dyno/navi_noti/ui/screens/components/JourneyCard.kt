@@ -20,8 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Stop
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -59,6 +61,8 @@ fun JourneyCard(
     notificationStyle: NotificationStyle,
     notificationTemplate: NotificationTemplate,
     isSimulatorRunning: Boolean,
+    isTripMuted: Boolean,
+    onUnmuteTrip: () -> Unit,
     onOpenMaps: () -> Unit,
     onStartSimulation: () -> Unit,
     onStopSimulation: () -> Unit
@@ -76,7 +80,18 @@ fun JourneyCard(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            StatusPill(state)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StatusPill(state)
+                if (isTripMuted && state.shouldShowNotification) {
+                    AssistChip(
+                        onClick = onUnmuteTrip,
+                        label = { Text(stringResource(R.string.trip_muted)) },
+                        leadingIcon = {
+                            Icon(Icons.Outlined.NotificationsOff, contentDescription = null, modifier = Modifier.size(18.dp))
+                        }
+                    )
+                }
+            }
             ManeuverHeader(activeStep, localizedContext)
             DistanceProgress(activeStep?.distanceMeters)
             WatchPreview(

@@ -93,4 +93,28 @@
     <string name="template_reset">Reset</string>
     <string name="preview_sample">Example</string>
     <string name="preview_sample_street">Main Street</string>
+
+    <!-- Vibration -->
+    <string name="alert_section_label">Watch vibration</string>
+    <string name="alert_quiet">Quiet</string>
+    <string name="alert_quiet_desc">Vibrates once near each turn (30 m) and on arrival</string>
+    <string name="alert_balanced">Balanced</string>
+    <string name="alert_balanced_desc">Vibrates at 100 m and 30 m before turns, and on arrival</string>
+    <string name="alert_full">Full</string>
+    <string name="alert_full_desc">Vibrates at every milestone, including straight segments</string>
+    <string name="alert_custom">Custom</string>
+    <string name="alert_custom_desc">Choose exactly when your watch vibrates</string>
+    <string name="alert_far">At 100 m before a turn</string>
+    <string name="alert_near">At 30 m before a turn</string>
+    <string name="alert_turn_point">When reaching the turn</string>
+    <string name="alert_arrival">On arrival</string>
+    <string name="alert_turns_only">Only for turns (stay silent when going straight)</string>
+    <string name="alert_cooldown">Minimum gap between vibrations</string>
+    <string name="alert_cooldown_off">Off</string>
+    <string name="alert_cooldown_value">%1$d s</string>
+    <string name="alert_summary">Up to %1$d vibrations per turn</string>
+    <string name="action_mute_trip">Mute this trip</string>
+    <string name="action_unmute_trip">Vibrate again</string>
+    <string name="show_eta_label">Show arrival time (ETA)</string>
+    <string name="trip_muted">Muted for this trip</string>
 </resources>

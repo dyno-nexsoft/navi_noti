@@ -25,7 +25,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Switch
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -43,6 +48,8 @@ import com.dyno.navi_noti.data.model.ThemeMode
 fun SettingsCard(
     notificationStyle: NotificationStyle,
     notificationTemplate: NotificationTemplate,
+    showEta: Boolean,
+    onShowEtaChanged: (Boolean) -> Unit,
     themeMode: ThemeMode,
     appLanguage: AppLanguage,
     onNotificationStyleSelected: (NotificationStyle) -> Unit,
@@ -68,6 +75,19 @@ fun SettingsCard(
                     onStyleSelected = onNotificationStyleSelected,
                     onTemplateChanged = onNotificationTemplateChanged
                 )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(value = showEta, role = Role.Switch, onValueChange = onShowEtaChanged),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.show_eta_label),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(checked = showEta, onCheckedChange = null)
+                }
                 HorizontalDivider()
                 PreferenceSelector(
                     title = stringResource(R.string.theme_mode_label),

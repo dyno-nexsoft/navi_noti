@@ -93,4 +93,28 @@
     <string name="template_reset">Mặc định</string>
     <string name="preview_sample">Ví dụ</string>
     <string name="preview_sample_street">Đường Nguyễn Huệ</string>
+
+    <!-- Vibration -->
+    <string name="alert_section_label">Rung trên đồng hồ</string>
+    <string name="alert_quiet">Ít</string>
+    <string name="alert_quiet_desc">Rung 1 lần khi sắp rẽ (30 m) và khi đến nơi</string>
+    <string name="alert_balanced">Cân bằng</string>
+    <string name="alert_balanced_desc">Rung khi còn 100 m và 30 m tới chỗ rẽ, và khi đến nơi</string>
+    <string name="alert_full">Đầy đủ</string>
+    <string name="alert_full_desc">Rung ở mọi mốc, kể cả đoạn đi thẳng</string>
+    <string name="alert_custom">Tuỳ chỉnh</string>
+    <string name="alert_custom_desc">Tự chọn lúc nào đồng hồ rung</string>
+    <string name="alert_far">Khi còn 100 m tới chỗ rẽ</string>
+    <string name="alert_near">Khi còn 30 m tới chỗ rẽ</string>
+    <string name="alert_turn_point">Khi tới chỗ rẽ</string>
+    <string name="alert_arrival">Khi đến nơi</string>
+    <string name="alert_turns_only">Chỉ rung khi rẽ (đi thẳng thì im lặng)</string>
+    <string name="alert_cooldown">Khoảng nghỉ tối thiểu giữa 2 lần rung</string>
+    <string name="alert_cooldown_off">Tắt</string>
+    <string name="alert_cooldown_value">%1$d giây</string>
+    <string name="alert_summary">Tối đa %1$d lần rung mỗi chỗ rẽ</string>
+    <string name="action_mute_trip">Im lặng chuyến này</string>
+    <string name="action_unmute_trip">Bật rung lại</string>
+    <string name="show_eta_label">Hiện giờ đến (ETA)</string>
+    <string name="trip_muted">Đã tắt rung chuyến này</string>
 </resources>

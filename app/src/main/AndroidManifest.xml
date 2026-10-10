@@ -42,6 +42,10 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".service.MuteTripReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>

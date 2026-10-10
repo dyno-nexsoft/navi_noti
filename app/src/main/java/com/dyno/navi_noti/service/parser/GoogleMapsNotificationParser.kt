@@ -80,14 +80,15 @@ object GoogleMapsNotificationParser {
             rawAdditionalTexts.isEmpty()
         ) return null
 
-        val candidates = listOf(rawTitle, rawText, rawSubText) + rawAdditionalTexts
-        val combined = candidates.joinToString(" ").lowercase(Locale.ROOT)
+        // subText là dòng ETA ("3 min · 900 m · 11:36 PM"): chỉ dùng để nhận biết đã đến nơi,
+        // không lấy khoảng cách hay tên đường từ đó (đó là số liệu cả chuyến)
+        val candidates = listOf(rawTitle, rawText) + rawAdditionalTexts
+        val combined = (candidates + rawSubText).joinToString(" ").lowercase(Locale.ROOT)
         if (isArrival(combined)) {
             return NavigationStep.arrived(extractDestination(rawTitle, rawText, rawSubText))
         }
 
-        // subText là dòng ETA ("3 min · 900 m · 11:36 PM"): quãng đường cả chuyến, không phải tới điểm rẽ
-        val distanceInfo = extractDistance(candidates - rawSubText)
+        val distanceInfo = extractDistance(candidates)
         val textResult = extractActionAndStreet(candidates, distanceInfo?.rawMatch)
         val actionAndStreet = applyIconManeuver(textResult, candidates, distanceInfo?.rawMatch, iconManeuver)
 
@@ -100,7 +101,8 @@ object GoogleMapsNotificationParser {
             streetName = actionAndStreet.streetName?.let(::stripToward),
             distanceMeters = distanceMeters,
             maneuver = actionAndStreet.maneuver ?: ManeuverType.fromText(actionAndStreet.action),
-            isApproaching = isApproaching
+            isApproaching = isApproaching,
+            eta = rawSubText.ifBlank { null }
         )
     }
 

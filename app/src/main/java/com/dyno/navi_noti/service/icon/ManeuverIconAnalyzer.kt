@@ -38,11 +38,18 @@ object ManeuverIconAnalyzer {
 
         val isLeft = asymmetry > 0
         val side = if (isLeft) left else right
+        val opposite = if (isLeft) right else left
+        // Icon vòng xoay của Maps là vòng hở: cung tròn một bên thân, lối ra bên kia
+        if (opposite.size * 100 >= side.size * ROUNDABOUT_OPPOSITE_PERCENT) return ManeuverType.ROUNDABOUT
+
         val angle = principalAngle(side)
         // Ảnh có trục y hướng xuống: nhánh trái đi lên có góc dương, nhánh phải đi lên có góc âm
         val upAngle = if (isLeft) angle else -angle
         return when {
-            abs(angle) >= VERTICAL_ANGLE -> ManeuverType.U_TURN
+            abs(angle) >= VERTICAL_ANGLE ->
+                // Nhánh dựng đứng: quay đầu thì nhánh quặt xuống nửa dưới; ngược lại là mũi tên chếch rồi đi lên
+                if (lowerHalfPercent(side, box) >= U_TURN_LOWER_PERCENT) ManeuverType.U_TURN
+                else if (isLeft) ManeuverType.SLIGHT_LEFT else ManeuverType.SLIGHT_RIGHT
             upAngle >= DIAGONAL_ANGLE -> if (isLeft) ManeuverType.SLIGHT_LEFT else ManeuverType.SLIGHT_RIGHT
             upAngle <= -DIAGONAL_ANGLE -> if (isLeft) ManeuverType.SHARP_LEFT else ManeuverType.SHARP_RIGHT
             else -> if (isLeft) ManeuverType.TURN_LEFT else ManeuverType.TURN_RIGHT
@@ -63,6 +70,11 @@ object ManeuverIconAnalyzer {
         }
         val center = mask.width / 2.0
         return runs.minByOrNull { abs((it.first + it.last) / 2.0 - center) }
+    }
+
+    private fun lowerHalfPercent(points: List<Pair<Int, Int>>, box: Box): Int {
+        val middle = (box.top + box.bottom) / 2.0
+        return points.count { it.second > middle } * 100 / points.size
     }
 
     /// Góc trục chính (độ) của tập điểm: 0 = nằm ngang, ±90 = thẳng đứng
@@ -164,4 +176,6 @@ object ManeuverIconAnalyzer {
     private const val DIAGONAL_ANGLE = 25.0
     private const val VERTICAL_ANGLE = 65.0
     private const val MIN_HOLE_PERCENT = 3
+    private const val ROUNDABOUT_OPPOSITE_PERCENT = 20
+    private const val U_TURN_LOWER_PERCENT = 35
 }

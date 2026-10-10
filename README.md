@@ -58,7 +58,14 @@ Google Maps (nhất là Live Update trên Android 16) thường chỉ gửi kho�
 
 ## Cách thông báo thay đổi
 
-- Chỉ phát cảnh báo tại các mốc 100 m, 30 m, khi tới điểm rẽ (Maps chuyển maneuver hoặc sang trạng thái chờ hướng dẫn), và khi đến đích.
+- Mức rung chọn trong app (mục **Rung trên đồng hồ**):
+  - **Ít:** chỉ rung khi còn 30 m tới chỗ rẽ và khi đến nơi, nghỉ tối thiểu 15 giây giữa 2 lần rung.
+  - **Cân bằng** (mặc định): rung ở 100 m và 30 m trước chỗ rẽ và khi đến nơi; đoạn đi thẳng im lặng; nghỉ tối thiểu 8 giây.
+  - **Đầy đủ:** rung ở mọi mốc, kể cả khi tới chỗ rẽ và đoạn đi thẳng.
+  - **Tuỳ chỉnh:** bật/tắt từng mốc, chỉ rung khi rẽ, chọn khoảng nghỉ (tắt, 5, 8, 15, 30 giây).
+- Mốc rung được dự đoán theo tốc độ: nếu lần cập nhật kế tiếp của Maps sẽ vượt qua mốc (đi nhanh, Maps nhảy từ 60 m xuống 0 m) thì rung ngay. Khoảng nghỉ chỉ chặn mốc báo trước, không chặn mốc 30 m và lúc đến nơi.
+- Nút **Im lặng chuyến này** trên notification: vẫn cập nhật nội dung nhưng không rung tới hết chuyến; bấm lại để bật rung.
+- Dòng giờ đến (ETA) của Maps hiển thị phụ trên notification, có thể tắt trong Cài đặt.
 - Không phát cảnh báo định kỳ hoặc theo mỗi lần khoảng cách thay đổi.
 - Khi tên đường thay đổi, cập nhật notification hiện tại bằng cùng notification ID một cách im lặng; không để tên đường cũ hiển thị và không phát âm thanh/rung chỉ vì đổi tên đường.
 - Chỉ giữ một notification điều hướng hiện tại. Các lần cập nhật dùng cùng ID để thay nội dung, không tạo notification riêng mới.

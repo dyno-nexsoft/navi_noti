@@ -12,7 +12,9 @@ data class NavigationStep(
     val maneuver: ManeuverType = ManeuverType.fromText(action),
     val isApproaching: Boolean = false,
     val isWaiting: Boolean = false,
-    val isDestination: Boolean = false
+    val isDestination: Boolean = false,
+    /// Dòng ETA của Maps ("3 min · 900 m · 11:36 PM"), hiển thị phụ trên đồng hồ
+    val eta: String? = null
 ) {
     /// Định dạng tiêu đề theo ngôn ngữ hệ thống hoặc ngữ cảnh ứng dụng
     fun formatTitle(context: Context): String = when {

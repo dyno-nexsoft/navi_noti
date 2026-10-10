@@ -41,6 +41,7 @@ import androidx.window.layout.WindowInfoTracker
 import com.dyno.navi_noti.R
 import com.dyno.navi_noti.service.GoogleMapsNotificationListenerService
 import com.dyno.navi_noti.ui.MainViewModel
+import com.dyno.navi_noti.ui.screens.components.AlertCard
 import com.dyno.navi_noti.ui.screens.components.GuideCard
 import com.dyno.navi_noti.ui.screens.components.JourneyCard
 import com.dyno.navi_noti.ui.screens.components.SettingsCard
@@ -63,6 +64,10 @@ fun HomeScreen(
     val appLanguage by viewModel.appLanguage.collectAsState()
     val notificationStyle by viewModel.notificationStyle.collectAsState()
     val notificationTemplate by viewModel.notificationTemplate.collectAsState()
+    val alertPreset by viewModel.alertPreset.collectAsState()
+    val showEta by viewModel.showEta.collectAsState()
+    val isTripMuted by viewModel.isTripMuted.collectAsState()
+    val customAlertSettings by viewModel.customAlertSettings.collectAsState()
     val context = LocalContext.current
     val hingeWidth = rememberVerticalHingeWidth(context)
 
@@ -91,6 +96,8 @@ fun HomeScreen(
                         notificationStyle = notificationStyle,
                         notificationTemplate = notificationTemplate,
                         isSimulatorRunning = isSimulatorRunning,
+                        isTripMuted = isTripMuted,
+                        onUnmuteTrip = { viewModel.setTripMuted(false) },
                         onOpenMaps = { context.openGoogleMaps() },
                         onStartSimulation = viewModel::startSimulation,
                         onStopSimulation = viewModel::stopSimulation
@@ -108,6 +115,8 @@ fun HomeScreen(
                     SettingsCard(
                         notificationStyle = notificationStyle,
                         notificationTemplate = notificationTemplate,
+                        showEta = showEta,
+                        onShowEtaChanged = viewModel::setShowEta,
                         themeMode = themeMode,
                         appLanguage = appLanguage,
                         onNotificationStyleSelected = viewModel::setNotificationStyle,
@@ -118,7 +127,15 @@ fun HomeScreen(
                 }
                 // Chưa cấp đủ quyền thì việc cần làm đầu tiên là thiết lập, đưa lên trên cùng
                 val primary = if (setupReady) listOf(journey, setup) else listOf(setup, journey)
-                val secondary = listOf(settings, { GuideCard() })
+                val alerts: @Composable () -> Unit = {
+                    AlertCard(
+                        preset = alertPreset,
+                        customSettings = customAlertSettings,
+                        onPresetSelected = viewModel::setAlertPreset,
+                        onCustomSettingsChanged = viewModel::setCustomAlertSettings
+                    )
+                }
+                val secondary = listOf(alerts, settings, { GuideCard() })
 
                 Column(
                     modifier = Modifier

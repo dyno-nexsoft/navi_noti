@@ -6,6 +6,8 @@ import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.dyno.navi_noti.data.model.AlertPreset
+import com.dyno.navi_noti.data.model.AlertSettings
 import com.dyno.navi_noti.data.model.AppLanguage
 import com.dyno.navi_noti.data.model.NavigationState
 import com.dyno.navi_noti.data.model.NavigationStep
@@ -31,12 +33,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val appLanguage: StateFlow<AppLanguage> = preferencesManager.appLanguage
     val notificationStyle: StateFlow<NotificationStyle> = preferencesManager.notificationStyle
     val notificationTemplate: StateFlow<NotificationTemplate> = preferencesManager.notificationTemplate
+    val alertPreset: StateFlow<AlertPreset> = preferencesManager.alertPreset
+    val customAlertSettings: StateFlow<AlertSettings> = preferencesManager.customAlertSettings
 
     val currentState: StateFlow<NavigationState> = NavigationRepository.currentState
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NavigationState.IDLE)
 
     val currentStep: StateFlow<NavigationStep?> = NavigationRepository.currentStep
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val showEta: StateFlow<Boolean> = preferencesManager.showEta
+    val isTripMuted: StateFlow<Boolean> = NavigationRepository.isTripMuted
+
+    fun setShowEta(show: Boolean) {
+        preferencesManager.setShowEta(show)
+    }
+
+    fun setTripMuted(muted: Boolean) {
+        NavigationRepository.setTripMuted(muted)
+    }
 
     val isSimulatorRunning: StateFlow<Boolean> = NavigationRepository.isSimulatorRunning
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -63,6 +78,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setNotificationStyle(style: NotificationStyle) {
         preferencesManager.setNotificationStyle(style)
+    }
+
+    fun setAlertPreset(preset: AlertPreset) {
+        preferencesManager.setAlertPreset(preset)
+    }
+
+    fun setCustomAlertSettings(settings: AlertSettings) {
+        preferencesManager.setCustomAlertSettings(settings)
     }
 
     fun setNotificationTemplate(template: NotificationTemplate) {
