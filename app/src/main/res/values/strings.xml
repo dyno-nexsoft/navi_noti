@@ -10,7 +10,7 @@
 
     <!-- User Guide -->
     <string name="how_it_works_title">Quick guide</string>
-    <string name="how_it_works_desc">1. Open Google Maps and start navigation as usual.\n2. Navi Noti filters and forwards the next step to your watch.\n3. The watch only alerts at key milestones (~100m, ~30m, step changes, and arrival); other distance updates are silent.\n4. Notifications clear automatically when you pause or finish.</string>
+    <string name="how_it_works_desc">1. Open Google Maps and start navigation as usual.\n2. Navi Noti reads the next turn (including from the Maps arrow) and sends it to your watch.\n3. Your watch only vibrates at the moments chosen in Watch vibration; other updates are silent.\n4. Tap Mute this trip on the notification to stop vibrations for the rest of the trip.\n5. The notification clears when you stop or arrive.</string>
 
     <!-- Settings: Theme & Language -->
     <string name="settings_title">Settings</string>

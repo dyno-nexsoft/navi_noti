@@ -84,6 +84,9 @@ fun HomeScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 val wideLayout = maxWidth >= 600.dp
+                // Điện thoại nhỏ (dưới 360 dp) hoặc màn thấp (nằm ngang): thu gọn khoảng cách và kích thước
+                val narrow = maxWidth < 360.dp
+                val compactCards = narrow || compactHeight
                 val spacing = if (compactHeight) 12.dp else 16.dp
                 val localizedContext = context.withAppLanguage(appLanguage)
                 val setupReady = isListenerGranted && isPostGranted
@@ -96,6 +99,7 @@ fun HomeScreen(
                         notificationStyle = notificationStyle,
                         notificationTemplate = notificationTemplate,
                         isSimulatorRunning = isSimulatorRunning,
+                        compact = compactCards,
                         isTripMuted = isTripMuted,
                         onUnmuteTrip = { viewModel.setTripMuted(false) },
                         onOpenMaps = { context.openGoogleMaps() },
@@ -142,7 +146,7 @@ fun HomeScreen(
                         .widthIn(max = if (wideLayout) 1200.dp else 680.dp)
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = if (compactHeight) 12.dp else 20.dp, vertical = 8.dp),
+                        .padding(horizontal = if (compactCards) 12.dp else 20.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(spacing)
                 ) {
                     if (wideLayout) {

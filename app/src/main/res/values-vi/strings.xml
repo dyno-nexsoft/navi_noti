@@ -10,7 +10,7 @@
 
     <!-- Hướng dẫn sử dụng -->
     <string name="how_it_works_title">Hướng dẫn nhanh</string>
-    <string name="how_it_works_desc">1. Mở Google Maps và bắt đầu dẫn đường như bình thường.\n2. Navi Noti tự động lọc và đẩy bước kế tiếp sang thông báo đồng hồ.\n3. Đồng hồ chỉ rung tại các mốc quan trọng (~100m, ~30m, chuyển bước và đến nơi); cập nhật khoảng cách khác hiển thị im lặng.\n4. Thông báo tự động đóng khi bạn dừng hoặc hoàn thành lộ trình.</string>
+    <string name="how_it_works_desc">1. Mở Google Maps và bắt đầu dẫn đường như bình thường.\n2. Navi Noti đọc hướng rẽ (kể cả từ mũi tên của Maps) và đẩy bước kế tiếp sang đồng hồ.\n3. Đồng hồ chỉ rung theo mức bạn chọn ở mục Rung trên đồng hồ; các cập nhật khác hiển thị im lặng.\n4. Bấm Im lặng chuyến này trên thông báo nếu không muốn rung nữa.\n5. Thông báo tự đóng khi bạn dừng hoặc đến nơi.</string>
 
     <!-- Cài đặt: Giao diện & Ngôn ngữ -->
     <string name="settings_title">Cài đặt</string>

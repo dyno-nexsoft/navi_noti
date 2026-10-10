@@ -11,6 +11,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +63,7 @@ fun JourneyCard(
     notificationStyle: NotificationStyle,
     notificationTemplate: NotificationTemplate,
     isSimulatorRunning: Boolean,
+    compact: Boolean,
     isTripMuted: Boolean,
     onUnmuteTrip: () -> Unit,
     onOpenMaps: () -> Unit,
@@ -77,8 +80,8 @@ fun JourneyCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.padding(if (compact) 16.dp else 20.dp),
+            verticalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 16.dp)
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 StatusPill(state)
@@ -92,7 +95,7 @@ fun JourneyCard(
                     )
                 }
             }
-            ManeuverHeader(activeStep, localizedContext)
+            ManeuverHeader(activeStep, localizedContext, compact)
             DistanceProgress(activeStep?.distanceMeters)
             WatchPreview(
                 step = activeStep ?: sampleStep(localizedContext),
@@ -135,7 +138,7 @@ private fun StatusPill(state: NavigationState) {
 }
 
 @Composable
-private fun ManeuverHeader(step: NavigationStep?, localizedContext: Context) {
+private fun ManeuverHeader(step: NavigationStep?, localizedContext: Context, compact: Boolean) {
     AnimatedContent(
         targetState = step,
         transitionSpec = { (fadeIn() + scaleIn(initialScale = 0.92f)) togetherWith fadeOut() },
@@ -143,12 +146,12 @@ private fun ManeuverHeader(step: NavigationStep?, localizedContext: Context) {
         label = "maneuver"
     ) { current ->
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(76.dp)
+                    .size(if (compact) 60.dp else 76.dp)
                     .clip(RoundedCornerShape(22.dp))
                     .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
@@ -157,14 +160,15 @@ private fun ManeuverHeader(step: NavigationStep?, localizedContext: Context) {
                     painter = painterResource((current?.maneuver ?: ManeuverType.WAITING).iconRes),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(44.dp)
+                    modifier = Modifier.size(if (compact) 34.dp else 44.dp)
                 )
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 current?.distanceText?.let {
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.displaySmall,
+                        style = if (compact) MaterialTheme.typography.headlineMedium
+                        else MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -264,6 +268,7 @@ private fun WatchPreview(
     }
 }
 
+/// Hai nút cạnh nhau; màn hẹp (dưới ~300 dp nội dung) thì xếp dọc để chữ không bị xuống dòng
 @Composable
 private fun JourneyActions(
     isSimulatorRunning: Boolean,
@@ -271,33 +276,54 @@ private fun JourneyActions(
     onStartSimulation: () -> Unit,
     onStopSimulation: () -> Unit
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        FilledTonalButton(
-            onClick = onOpenMaps,
-            modifier = Modifier.weight(1f),
-            contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-        ) {
-            Icon(Icons.Outlined.Map, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(stringResource(R.string.open_maps_btn), modifier = Modifier.padding(start = 8.dp))
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val stacked = maxWidth < 300.dp
+        val openMaps: @Composable (Modifier) -> Unit = { modifier ->
+            FilledTonalButton(
+                onClick = onOpenMaps,
+                modifier = modifier,
+                contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+            ) {
+                ButtonLabel(Icons.Outlined.Map, stringResource(R.string.open_maps_btn))
+            }
         }
-        OutlinedButton(
-            onClick = if (isSimulatorRunning) onStopSimulation else onStartSimulation,
-            modifier = Modifier.weight(1f),
-            contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-        ) {
-            Icon(
-                imageVector = if (isSimulatorRunning) Icons.Outlined.Stop else Icons.Outlined.PlayArrow,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Text(
-                text = stringResource(
-                    if (isSimulatorRunning) R.string.stop_short_btn else R.string.demo_short_btn
-                ),
-                modifier = Modifier.padding(start = 8.dp)
-            )
+        val demo: @Composable (Modifier) -> Unit = { modifier ->
+            OutlinedButton(
+                onClick = if (isSimulatorRunning) onStopSimulation else onStartSimulation,
+                modifier = modifier,
+                contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+            ) {
+                ButtonLabel(
+                    icon = if (isSimulatorRunning) Icons.Outlined.Stop else Icons.Outlined.PlayArrow,
+                    text = stringResource(
+                        if (isSimulatorRunning) R.string.stop_short_btn else R.string.demo_short_btn
+                    )
+                )
+            }
+        }
+        if (stacked) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                openMaps(Modifier.fillMaxWidth())
+                demo(Modifier.fillMaxWidth())
+            }
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                openMaps(Modifier.weight(1f))
+                demo(Modifier.weight(1f))
+            }
         }
     }
+}
+
+@Composable
+private fun ButtonLabel(icon: ImageVector, text: String) {
+    Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
+    Text(
+        text = text,
+        modifier = Modifier.padding(start = 8.dp),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 private fun sampleStep(context: Context) = NavigationStep(
